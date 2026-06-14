@@ -2,9 +2,60 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>TransX.kz — Поиск грузов и машин в Казахстане</title>
     <style>
+
+/* Кнопка голосового поиска в правом нижнем углу */
+.voice-search-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #1565C0; /* Синий цвет твоего бренда */
+    border: none;
+    box-shadow: 0 4px 16px rgba(21, 101, 192, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: all 0.3s ease;
+}
+
+.voice-search-btn:hover {
+    transform: scale(1.1);
+    background: #0D47A1;
+}
+
+.voice-icon {
+    font-size: 24px;
+    color: white;
+}
+
+/* Эффект пульсации во время прослушивания (как в Shazam) */
+.voice-search-btn.listening {
+    background: #EF4444; /* Красный цвет во время записи */
+    animation: shazamPulse 1.5s infinite;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+}
+
+@keyframes shazamPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+    }
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+}
 
 .route-row{
     align-items:flex-end;
@@ -5299,69 +5350,151 @@ window.toggleAdvancedFilters = function() {
 
     </script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            // Небольшая инициализация автодополнений для форм добавления (дублировалось ранее)
-            const addFromInput = document.getElementById('addCargoFrom');
-            const addFromSuggestions = document.getElementById('addCargoFromSuggestions');
-            
-            const addToInput = document.getElementById('addCargoTo');
-            const addToSuggestions = document.getElementById('addCargoToSuggestions');
+    <!-- ========== ИСПРАВЛЕННЫЙ ГОЛОСОВОЙ ПОИСК ========== -->
+<script>
+(function() {
+    function initVoiceSearch() {
+        const voiceSearchBtn = document.getElementById('voiceSearchBtn');
+        if (!voiceSearchBtn) return;
 
-            // Универсальная функция для инициализации подсказок - ранее была, но на всякий случай не ломаем
-            function initAddCargoAutocomplete(input, suggestionsBox) {
-                if (!input || !suggestionsBox) return;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            voiceSearchBtn.style.display = 'none';
+            return;
+        }
 
-                input.addEventListener('input', function() {
-                    const query = this.value.toLowerCase().trim();
-                    suggestionsBox.innerHTML = '';
-                    
-                    if (query.length < 1) {
-                        suggestionsBox.style.display = 'none';
-                        return;
-                    }
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'ru-RU';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
 
-                    const cities = ["Алматы", "Астана", "Шымкент", "Караганда", "Актобе", "Тараз", "Павлодар", "Усть-Каменогорск", "Семей", "Кызылорда", "Костанай", "Атырау", "Уральск", "Петропавловск", "Актау", "Темиртау", "Туркестан", "Кокшетау", "Талдыкорган", "Экибастуз"];
+        let isListening = false;
 
-                    const filtered = cities.filter(city => city.toLowerCase().includes(query));
-
-                    if (filtered.length === 0) {
-                        suggestionsBox.style.display = 'none';
-                        return;
-                    }
-
-                    filtered.forEach(city => {
-                        const item = document.createElement('div');
-                        item.className = 'autocomplete-suggestion-item';
-                        item.innerHTML = `<span class="city-icon">📍</span> <span>${city}</span>`;
-                        
-                        item.addEventListener('click', () => {
-                            input.value = city;
-                            suggestionsBox.style.display = 'none';
-                        });
-                        
-                        suggestionsBox.appendChild(item);
-                    });
-
-                    suggestionsBox.style.display = 'block';
-                });
-
-                document.addEventListener('click', (e) => {
-                    if (!input.contains(e.target) && !suggestionsBox.contains(e.target)) {
-                        suggestionsBox.style.display = 'none';
-                    }
-                });
+        voiceSearchBtn.addEventListener('click', () => {
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
             }
-
-            initAddCargoAutocomplete(addFromInput, addFromSuggestions);
-            initAddCargoAutocomplete(addToInput, addToSuggestions);
         });
 
+        recognition.onstart = () => {
+            isListening = true;
+            voiceSearchBtn.classList.add('listening');
+            if (window.showToast) window.showToast("🎙️ Слушаю вас... Говорите маршрут и вес");
+        };
 
+        recognition.onend = () => {
+            isListening = false;
+            voiceSearchBtn.classList.remove('listening');
+        };
 
+        recognition.onerror = () => {
+            isListening = false;
+            voiceSearchBtn.classList.remove('listening');
+            if (window.showToast) window.showToast("❌ Ошибка распознавания речи");
+        };
 
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript.toLowerCase();
+            console.log("Распознанный текст:", transcript);
 
+            // 1. Извлечение городов (ищем предлоги "из/с/со [город]" и "до/в [город]")
+            let fromCity = "";
+            let toCity = "";
 
+            const fromMatch = transcript.match(/(?:из|с|со)\s+([а-яё\-]+)/i);
+            const toMatch = transcript.match(/(?:до|в|на)\s+([а-яё\-]+)/i);
+
+            if (fromMatch && fromMatch[1]) fromCity = fromMatch[1];
+            if (toMatch && toMatch[1]) toCity = toMatch[1];
+
+            // Капитализируем первую букву городов для красоты
+            if (fromCity) fromCity = fromCity.charAt(0).toUpperCase() + fromCity.slice(1);
+            if (toCity) toCity = toCity.charAt(0).toUpperCase() + toCity.slice(1);
+
+            // 2. Умное извлечение ВЕСА (например: "не больше 5 тонн", "вес 3.5 т", "до 10т")
+            let weightVal = "";
+            // Ищет цифры (включая дробные, типа 3.5 или 3,5), за которыми идет т, тон, тонн, тонны
+            const weightMatch = transcript.match(/(\d+(?:[\.,]\d+)?)\s*(?:т|тон|тонн|тонны|тн)/i);
+            if (weightMatch && weightMatch[1]) {
+                weightVal = weightMatch[1].replace(',', '.'); // заменяем запятую на точку для инпутов
+            }
+
+            // 3. Извлечение ТИПА КУЗОВА (опционально)
+            let bodyType = "";
+            if (transcript.includes("тент")) bodyType = "крытая"; // или тент, смотря какие value в твоем <select>
+            if (transcript.includes("реф") || transcript.includes("холодильник")) bodyType = "рефрижератор";
+            if (transcript.includes("борт") || transcript.includes("открытый")) bodyType = "открытая";
+            if (transcript.includes("изотерм")) bodyType = "изотермический";
+
+            // --- Заполнение элементов формы ---
+            let successFound = false;
+            let toastMessage = "✅ Извлечено:";
+
+            // Подставляем город отправления
+            const fromInput = document.getElementById('searchFrom') || document.getElementById('fromCity'); 
+            if (fromInput && fromCity) {
+                fromInput.value = fromCity;
+                fromInput.dispatchEvent(new Event('input', { bubbles: true }));
+                toastMessage += ` 📍 из ${fromCity}`;
+                successFound = true;
+            }
+
+            // Подставляем город назначения
+            const toInput = document.getElementById('searchTo') || document.getElementById('toCity');
+            if (toInput && toCity) {
+                toInput.value = toCity;
+                toInput.dispatchEvent(new Event('input', { bubbles: true }));
+                toastMessage += ` 🏁 до ${toCity}`;
+                successFound = true;
+            }
+
+            // Подставляем вес в поле "до" (Макс. вес) или просто вес
+            const weightToInput = document.getElementById('searchWeightTo') || document.getElementById('weightTo') || document.getElementById('newCargoWeightTons');
+            if (weightToInput && weightVal) {
+                weightToInput.value = weightVal;
+                weightToInput.dispatchEvent(new Event('input', { bubbles: true }));
+                toastMessage += ` ⚖️ до ${weightVal} т.`;
+                successFound = true;
+            }
+
+            // Подставляем тип кузова в селект, если он есть на форме
+            const bodyTypeSelect = document.getElementById('searchBodyType') || document.getElementById('bodyType');
+            if (bodyTypeSelect && bodyType) {
+                bodyTypeSelect.value = bodyType;
+                bodyTypeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                toastMessage += ` 📦 кузов: ${bodyType}`;
+                successFound = true;
+            }
+
+            // Если что-то успешно нашли и заполнили
+            if (successFound) {
+                if (window.showToast) window.showToast(toastMessage);
+
+                // Автоматический запуск поиска грузов или машин
+                if (typeof window.searchItems === 'function') {
+                    setTimeout(() => { window.searchItems(); }, 400);
+                } else if (typeof window.applyFilters === 'function') {
+                    setTimeout(() => { window.applyFilters(); }, 400);
+                }
+            } else {
+                if (window.showToast) window.showToast("❌ Не удалось распознать параметры фильтра. Попробуйте еще раз.");
+            }
+        };
+    }
+
+    // Инициализация при загрузке DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initVoiceSearch);
+    } else {
+        initVoiceSearch();
+    }
+})();
     </script>
+    
+    <button id="voiceSearchBtn" class="voice-search-btn" title="Голосовой поиск">
+        <span class="voice-icon">🎤</span>
+    </button>
 </body>
 </html>
