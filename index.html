@@ -1,0 +1,4969 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TransX.kz — Поиск грузов и машин в Казахстане</title>
+    <style>
+
+.route-row{
+    align-items:flex-end;
+}
+
+.swap-route-btn{
+    width:46px;
+    height:46px;
+    border:none;
+    border-radius:12px;
+    background:#1565C0;
+    color:white;
+    font-size:20px;
+    font-weight:700;
+    cursor:pointer;
+    flex-shrink:0;
+    transition:0.2s;
+}
+
+.swap-route-btn:hover{
+    background:#0D47A1;
+    transform:scale(1.05);
+}
+
+/* Убираем анимации для чатов */
+.chat-item {
+    transition: opacity 0.1s ease;
+    animation: none;
+}
+
+.chat-actions-menu {
+    transition: none;
+}
+
+.modal-chats {
+    animation: none;
+}
+
+.chat-item .chat-avatar,
+.chat-item .chat-info,
+.chat-item .chat-meta {
+    transition: none;
+}
+
+/* Минимальная анимация для удаления */
+.chat-item.removing {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.cargo-meta-date {
+    padding: 0 0 8px 0;
+    border-bottom: 1px dashed #EDF2F7;
+}
+
+.cargo-contact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+/* ========== МОДАЛКА ЧАТА ========== */
+.modal-chat {
+    max-width: 600px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+}
+
+.chat-header {
+    padding: 20px 24px 12px;
+    border-bottom: 1px solid #EDF2F7;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border-radius: 20px 20px 0 0;
+}
+
+.chat-header-info {
+    flex: 1;
+}
+
+.chat-header-name {
+    font-weight: 700;
+    font-size: 16px;
+    color: #1D252C;
+}
+
+.chat-header-lastseen {
+    font-size: 11px;
+    color: #7A869A;
+}
+
+.chat-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.chat-action-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 10px;
+    transition: background 0.15s;
+}
+
+.chat-action-btn:hover {
+    background: #F5F7FA;
+}
+
+.messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    background: #F8FAFC;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    max-width: 75%;
+}
+
+.message-outgoing {
+    align-self: flex-end;
+}
+
+.message-incoming {
+    align-self: flex-start;
+}
+
+.message-bubble {
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 13.5px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.message-outgoing .message-bubble {
+    background: #1565C0;
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.message-incoming .message-bubble {
+    background: white;
+    color: #1D252C;
+    border: 1px solid #E2E8F0;
+    border-bottom-left-radius: 4px;
+}
+
+.message-time {
+    font-size: 10px;
+    color: #A0B0C0;
+    margin-top: 4px;
+    margin-left: 8px;
+}
+
+.message-status {
+    font-size: 10px;
+    margin-left: 8px;
+}
+
+.chat-input-area {
+    padding: 16px 20px;
+    border-top: 1px solid #EDF2F7;
+    background: white;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.chat-input {
+    flex: 1;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 24px;
+    padding: 10px 18px;
+    font-size: 13.5px;
+    outline: none;
+    resize: none;
+    font-family: inherit;
+    max-height: 100px;
+}
+
+.chat-input:focus {
+    border-color: #1565C0;
+}
+
+.chat-send-btn {
+    background: #1565C0;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.chat-send-btn:hover {
+    background: #0D47A1;
+}
+
+.phone-reveal-banner {
+    background: #FFF3E0;
+    padding: 12px 16px;
+    margin: 8px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+}
+
+.phone-reveal-btn {
+    background: #25D366;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.phone-number-display {
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1D252C;
+}
+
+/* ========== НОВАЯ КНОПКА ЧАТОВ ========== */
+.btn-chats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1D252C;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.btn-chats:hover {
+    border-color: #25D366;
+    color: #25D366;
+}
+.chat-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #EF4444;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 20px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Модалка чатов */
+.modal-chats {
+    max-width: 500px;
+}
+.chats-list {
+    max-height: 500px;
+    overflow-y: auto;
+}
+.chat-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border-bottom: 1px solid #EDF2F7;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.chat-item:hover {
+    background: #F5F7FA;
+}
+.chat-item-main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+}
+.chat-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #1565C0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+.chat-info {
+    flex: 1;
+    min-width: 0;
+}
+.chat-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: #1D252C;
+}
+.chat-last-message {
+    font-size: 12px;
+    color: #7A869A;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+.chat-time {
+    font-size: 10px;
+    color: #A0B0C0;
+}
+.chat-meta {
+    text-align: right;
+    flex-shrink: 0;
+}
+.chat-unread {
+    background: #1565C0;
+    color: white;
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: bold;
+}
+.chat-actions-menu {
+    position: relative;
+    flex-shrink: 0;
+}
+.chat-more-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #D8E0EA;
+    border-radius: 50%;
+    background: #fff;
+    color: #5F6C7B;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    line-height: 1;
+    transition: all 0.15s ease;
+}
+.chat-more-btn:hover {
+    background: #F5F7FA;
+    border-color: #B8C4D1;
+    color: #1D252C;
+}
+.chat-actions-menu.open .chat-more-btn {
+    border-color: #1565C0;
+    color: #1565C0;
+}
+.chat-delete-btn {
+    display: none;
+    position: absolute;
+    top: 36px;
+    right: 0;
+    border: none;
+    border-radius: 10px;
+    background: #FFF1F0;
+    color: #C62828;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(29, 37, 44, 0.14);
+    z-index: 10;
+}
+.chat-actions-menu.open .chat-delete-btn {
+    display: block;
+}
+.chat-delete-btn:hover {
+    background: #FFE0DE;
+}
+.chat-delete-btn:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+.empty-chats {
+    text-align: center;
+    padding: 60px 20px;
+    color: #7A869A;
+}
+
+
+/* ========== ОБНОВЛЕННАЯ СУПЕР-ФОРМА ДОБАВЛЕНИЯ ГРУЗА ========== */
+.cargo-add-minimal-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.cargo-add-minimal-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 16px;
+    letter-spacing: -0.3px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Сетка для полей */
+.cargo-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+@media (max-width: 480px) {
+    .cargo-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Обертка для кастомных инпутов */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.input-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #718096;
+    padding-left: 2px;
+}
+
+/* Универсальные стильные инпуты */
+.cargo-add-minimal-box input[type="text"],
+.cargo-add-minimal-box input[type="number"],
+.cargo-add-minimal-box input[type="date"],
+.cargo-add-minimal-box select {
+    width: 100%;
+    height: 42px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0 12px;
+    font-size: 13.5px;
+    color: #2d3748;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.cargo-add-minimal-box input:focus,
+.cargo-add-minimal-box select:focus {
+    background: #ffffff;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+/* Комбинированное поле: Цена + Валюта */
+.price-currency-group {
+    display: flex;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.price-currency-group:focus-within {
+    background: #ffffff;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.price-currency-group input {
+    border: none !important;
+    background: transparent !important;
+    flex: 1;
+    height: 40px !important;
+}
+
+.price-currency-group select {
+    width: auto !important;
+    height: 40px !important;
+    border: none !important;
+    background: transparent !important;
+    padding: 0 8px !important;
+    font-weight: 600;
+    color: #4a5568;
+    cursor: pointer;
+    border-left: 1px solid #e2e8f0 !important;
+    border-radius: 0 !important;
+}
+
+/* Чекбокс "С торгом" и опции */
+.form-options-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding: 0 2px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #4a5568;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1px solid #cbd5e0;
+    cursor: pointer;
+}
+
+/* Кнопка отправки */
+.cargo-submit-btn {
+    width: 100%;
+    height: 42px;
+    background: #3182ce;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 14px;
+    transition: background 0.2s ease;
+}
+
+.cargo-submit-btn:hover {
+    background: #2b6cb0;
+}
+
+/* Адаптация выпадашки подсказок под дизайн формы добавления груза */
+.cargo-add-minimal-box .autocomplete-suggestions {
+    top: calc(100% - 2px);
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e0;
+}
+
+/* Обнуление базовых стилей и настройка шрифта */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: #F5F7FA;
+    color: #1D252C;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1160px;
+}
+
+/* Логотип */
+.header {
+    margin-bottom: 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1D252C;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+.logo:hover {
+    transform: scale(1.01);
+}
+
+/* Главное переключение: Найти груз / Найти машину */
+.search-tabs {
+    display: inline-flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    background: #ffffff;
+    padding: 8px;
+    border-radius: 12px;
+    border: 1px solid #E8EDF2;
+}
+.search-tab {
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #556779;
+    background: transparent;
+    border: none;
+}
+.search-tab.active {
+    background: linear-gradient(180deg,#F0F6FF,#E6F0FF);
+    color: #154F9C;
+    box-shadow: 0 2px 6px rgba(21,101,192,0.08);
+}
+
+/* Главный заголовок */
+.main-title {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.35;
+    margin-bottom: 18px;
+    color: #1D252C;
+}
+
+.flag-kz {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    margin-left: 4px;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Контейнер поисковой панели и промо */
+.search-section {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 40px;
+}
+
+/* Карточка ввода данных */
+.search-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 24px 28px;
+    flex: 3;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+    transition: box-shadow 0.3s ease;
+}
+.search-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* Промо-карточка */
+.promo-card {
+    background-color: #FFFFFF;
+    border-radius: 20px;
+    padding: 22px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    border: 1px solid #E8EDF2;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+.promo-card:hover {
+    border-color: #D0D7DE;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.promo-card h3 {
+    color: #1D252C;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.promo-card p {
+    color: #5E6C84;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* Элементы форм */
+.form-row {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+}
+
+.margin-top-15 {
+    margin-top: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.grid-2 {
+    flex: 1;
+}
+
+/* Пропорции колонок */
+.width-40 { width: 38%; }
+.width-20 { width: 18%; }
+.width-25 { width: 26%; }
+.width-15 { width: 18%; }
+
+.flex-end {
+    justify-content: flex-end;
+}
+
+/* Стили для label */
+label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #5E6C84;
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+}
+
+/* ========== СТИЛЬ ДЛЯ ВСЕХ ПОЛЕЙ ВВОДА ========== */
+input[type="text"],
+input[type="url"],
+input[type="tel"],
+input[type="number"],
+select,
+.date-input {
+    width: 100%;
+    height: 46px;
+    padding: 0 16px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a2634;
+    outline: none;
+    background-color: #FFFFFF;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+select:focus,
+.date-input:focus {
+    border-color: #1565C0;
+    box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1);
+}
+
+input[type="text"]:hover,
+input[type="url"]:hover,
+input[type="tel"]:hover,
+input[type="number"]:hover,
+select:hover,
+.date-input:hover {
+    border-color: #B0C4DE;
+}
+
+input[type="text"]::placeholder,
+input[type="url"]::placeholder,
+input[type="tel"]::placeholder,
+input[type="number"]::placeholder {
+    color: #A0B0C0;
+    font-weight: 400;
+    font-size: 13px;
+}
+
+/* Стилизация выпадающего списка select */
+.select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+select {
+    appearance: none;
+    cursor: pointer;
+    background: #FFFFFF;
+    padding-right: 45px;
+}
+
+.select-wrapper::after {
+    content: "";
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #7A869A;
+    pointer-events: none;
+    transition: transform 0.2s, border-top-color 0.2s;
+}
+
+.select-wrapper:hover::after {
+    border-top-color: #1565C0;
+}
+
+/* Диапазон от/до для веса */
+.range-inputs {
+    display: flex;
+    gap: 8px;
+}
+.range-inputs input {
+    text-align: left;
+    width: 100%;
+}
+
+/* ========== ПОЛЕ ДАТЫ С КАЛЕНДАРЕМ ========== */
+.date-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.date-input {
+    width: 100%;
+    padding-left: 44px;
+    cursor: pointer;
+    background: #FFFFFF;
+}
+
+input[type="date"].date-input {
+    padding-left: 44px;
+    color-scheme: light;
+}
+
+input[type="date"].date-input::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.calendar-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #1565C0;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    transition: color 0.2s;
+    z-index: 1;
+}
+
+/* Кнопка поиска */
+.btn-search {
+    width: 100%;
+    height: 46px;
+    background: #1565C0;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(21, 101, 192, 0.15);
+    text-transform: none;
+}
+.btn-search:hover {
+    background: #0D47A1;
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.25);
+}
+
+/* Статистика */
+.stats-section {
+    display: flex;
+    gap: 16px;
+}
+
+.stat-box {
+    background: #FFFFFF;
+    border: 1px solid #E8EDF2;
+    border-radius: 16px;
+    padding: 20px 24px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+}
+.stat-box:hover {
+    border-color: #C0D0E0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.stat-info h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1D252C;
+    margin-bottom: 4px;
+}
+
+.stat-info p {
+    font-size: 12px;
+    color: #5E6C84;
+    line-height: 1.4;
+}
+
+/* ========== КАРТОЧКИ ГРУЗОВ (МИНИМАЛИЗМ) ========== */
+.cargo-section {
+    margin-top: 36px;
+}
+
+.cargo-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.cargo-section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1D252C;
+}
+
+.cargo-section-subtitle {
+    font-size: 12px;
+    color: #7A869A;
+    margin-top: 4px;
+}
+
+.cargo-refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: #7A869A;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+.cargo-refresh-btn:hover {
+    color: #1565C0;
+    background: rgba(21, 101, 192, 0.05);
+}
+
+.cargo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+/* ===== ПОЛНОСТЬЮ ОБНОВЛЁННАЯ КАРТОЧКА ГРУЗА ===== */
+.cargo-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 20px 20px 16px 20px;
+    border: 1px solid #EDF2F7;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    opacity: 0;
+    animation: fadeIn 0.3s ease forwards;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.cargo-card:hover {
+    border-color: #C8D8E8;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Маршрут */
+.cargo-route {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+.cargo-city {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1D252C;
+    letter-spacing: -0.2px;
+}
+.cargo-arrow {
+    color: #B0BEC5;
+    font-size: 16px;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+/* Тип груза */
+.cargo-type {
+    font-size: 12px;
+    font-weight: 500;
+    color: #7A869A;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Мета-данные: вес, расстояние, дата */
+.cargo-meta {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 14px;
+}
+.cargo-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.cargo-meta-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #A0B0C0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.cargo-meta-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1D252C;
+}
+
+/* Дата публикации */
+.cargo-meta-date {
+    padding: 0;
+    border-bottom: none;
+    display: flex;
+    justify-content: flex-start;
+    gap: 6px;
+    margin-bottom: 14px;
+    font-size: 11px;
+    color: #A0B0C0;
+    font-weight: 500;
+}
+
+/* Нижняя часть карточки */
+.cargo-card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid #F0F4F8;
+    margin-top: auto;
+}
+
+.cargo-price {
+    font-size: 20px;
+    font-weight: 800;
+    color: #1D252C;
+    letter-spacing: -0.3px;
+}
+
+/* Кнопки контакта */
+.cargo-contact-btn,
+.cargo-phone-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #1565C0;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    min-width: 100px;
+    height: 36px;
+    text-align: center;
+    letter-spacing: 0.2px;
+}
+
+.cargo-contact-btn:hover {
+    background: #0D47A1;
+}
+
+.cargo-phone-link {
+    background: #25D366;
+    font-size: 12px;
+    padding: 8px 14px;
+    letter-spacing: 0.1px;
+}
+.cargo-phone-link:hover {
+    background: #128C7E;
+}
+
+/* Пагинация */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 32px;
+    align-items: center;
+}
+
+.pagination button {
+    width: auto;
+    padding: 0 24px;
+    height: 40px;
+    font-size: 13px;
+}
+
+.page-info {
+    padding: 8px 20px;
+    font-weight: 600;
+    color: #1D252C;
+    background: white;
+    border-radius: 10px;
+    font-size: 14px;
+    border: 1px solid #EDF2F7;
+}
+
+/* Адаптивность */
+@media (max-width: 900px) {
+    .cargo-grid { grid-template-columns: 1fr; }
+    .search-section, .stats-section { flex-direction: column; }
+    .form-row { flex-direction: column; gap: 14px; }
+    .width-40, .width-20, .width-25, .width-15 { width: 100%; }
+    .margin-top-15 { margin-top: 0; }
+    .pagination { flex-wrap: wrap; }
+    .cargo-meta { gap: 16px; }
+}
+@media (min-width: 901px) and (max-width: 1100px) {
+    .cargo-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ========== КНОПКА ВОЙТИ ========== */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.btn-login {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1D252C;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    letter-spacing: 0.1px;
+}
+.btn-login:hover {
+    border-color: #1565C0;
+    color: #1565C0;
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.1);
+}
+
+/* ========== МОДАЛЬНОЕ ОКНО ========== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(29, 37, 44, 0.45);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+
+.modal {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 36px 32px 32px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.15);
+    position: relative;
+    animation: modalIn 0.25s ease;
+}
+
+/* Модалка для крупных блоков (например, Мои грузы) */
+.modal.modal-large {
+    max-width: 700px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-close {
+    position: absolute;
+    top: 16px; right: 18px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9aaebf;
+    font-size: 22px;
+    line-height: 1;
+    padding: 4px;
+    border-radius: 50%;
+    transition: background 0.15s, color 0.15s;
+}
+
+.modal-logo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1D252C;
+    margin-bottom: 20px;
+}
+
+.modal-title {
+    font-size: 21px;
+    font-weight: 700;
+    color: #1D252C;
+    margin-bottom: 6px;
+}
+.modal-sub {
+    font-size: 13px;
+    color: #5E6C84;
+    margin-bottom: 26px;
+    line-height: 1.5;
+}
+
+.btn-google {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 13px 20px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    background: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1D252C;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.btn-google:hover {
+    border-color: #4285F4;
+    box-shadow: 0 4px 14px rgba(66,133,244,0.12);
+}
+
+.modal-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0;
+    color: #9aaebf;
+    font-size: 12px;
+    font-weight: 500;
+}
+.modal-divider::before, .modal-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #E2E8F0;
+}
+
+.modal-bottom-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+}
+
+.btn-telegram {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 12px 16px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    background: #FFFFFF;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1D252C;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-telegram:hover {
+    border-color: #2CA5E0;
+    color: #2CA5E0;
+    box-shadow: 0 4px 12px rgba(44,165,224,0.12);
+}
+
+.btn-register {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    background: #1565C0;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(21,101,192,0.2);
+    white-space: nowrap;
+}
+
+/* Дополнительное поле для ввода имени */
+.name-step-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 15px;
+}
+.btn-submit-name {
+    width: 100%;
+    height: 44px;
+    background: #1565C0;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+.btn-submit-name:hover {
+    background: #0D47A1;
+}
+
+/* Блок пользователя (после входа) */
+.user-pill {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 18px 8px 8px;
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1D252C;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.user-pill.active { display: flex; }
+.user-pill:hover { border-color: #1565C0; }
+
+.user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.user-avatar-placeholder {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Dropdown после входа */
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    padding: 8px;
+    min-width: 180px;
+    z-index: 100;
+    display: none;
+}
+.user-dropdown.active { display: block; }
+.user-dropdown-item {
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1D252C;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.user-dropdown-item:hover { background: #F5F7FA; }
+.user-dropdown-item.danger { color: #e53e3e; }
+.user-wrapper { position: relative; }
+
+/* Toast уведомление */
+.toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1D252C;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 2000;
+    pointer-events: none;
+    white-space: nowrap;
+}
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ КЛИЕНТСКИХ МОДАЛОК ПРОФИЛЯ И ГРУЗОВ */
+.profile-form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 10px;
+}
+.profile-avatar-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 10px;
+}
+.profile-big-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    object-fit: cover;
+}
+.my-cargo-list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+.my-cargo-item {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    padding: 12px 16px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.my-cargo-info h5 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1D252C;
+}
+.my-cargo-info p {
+    font-size: 12px;
+    color: #7A869A;
+}
+.my-cargo-price {
+    font-weight: 700;
+    color: #1565C0;
+    font-size: 14px;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 40px;
+    color: #7A869A;
+}
+
+.empty-cargos {
+    text-align: center;
+    padding: 40px;
+    color: #7A869A;
+    background: white;
+    border-radius: 16px;
+}
+
+/* ========== СТИЛИ ДЛЯ АВТОКОМПЛИТА (УМНЫЙ ПОИСК) ========== */
+.autocomplete-suggestions {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 100%;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 1100;
+    padding: 6px;
+    display: none;
+    transform-origin: top center;
+    animation: slideDown 0.15s ease forwards;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: scaleY(0.95); }
+    to { opacity: 1; transform: scaleY(1); }
+}
+
+.autocomplete-suggestion-item {
+    padding: 10px 14px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #1D252C;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.autocomplete-suggestion-item:hover {
+    background: #F5F7FA;
+    color: #1565C0;
+}
+
+.autocomplete-suggestion-item .city-icon {
+    color: #1565C0;
+    font-size: 12px;
+}
+
+/* ========== СКЕЛЕТОН АНИМАЦИЯ (ЗАГРУЗКА ПРИ ПОИСКЕ) ========== */
+.skeleton-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 20px 22px;
+    border: 1px solid #EDF2F7;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.skeleton-line {
+    background: linear-gradient(90deg, #E2E8F0 25%, #EDF2F7 50%, #E2E8F0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: 6px;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Доп. блок фильтров */
+.advanced-filters {
+    margin-top: 12px;
+    padding: 12px;
+    background: #FBFDFF;
+    border: 1px solid #E8EEF8;
+    border-radius: 10px;
+    display: none;
+    gap: 12px;
+}
+.advanced-filters.show { display: flex; flex-direction: column; }
+.filter-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.filter-row .form-group { flex:1; min-width:140px; }
+.filter-toggle { background:transparent; border:none; color:#1565C0; cursor:pointer; font-weight:700; padding:6px 8px; border-radius:8px;}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+<header class="header">
+    <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 18H6C4.89543 18 4 17.1046 4 16V6C4 4.89543 4.89543 4 6 4H14V18Z" fill="#1565C0" stroke="#1565C0" stroke-width="1.2"/>
+            <path d="M14 8H20L23 12V16C23 17.1046 22.1046 18 21 18H14V8Z" fill="#1565C0" stroke="#1565C0" stroke-width="1.2"/>
+            <circle cx="7.5" cy="18.5" r="2.5" fill="#FFFFFF" stroke="#1565C0" stroke-width="1"/>
+            <circle cx="17.5" cy="18.5" r="2.5" fill="#FFFFFF" stroke="#1565C0" stroke-width="1"/>
+        </svg>
+        <span>TransX.kz</span>
+    </div>
+
+    <div class="search-tabs" id="searchTabs">
+        <button class="search-tab active" id="tabFindCargo" onclick="setView('cargo')">Найти груз</button>
+        <button class="search-tab" id="tabFindTruck" onclick="setView('truck')">Найти машину</button>
+    </div>
+
+<div style="display: flex; align-items: center; gap: 12px;">
+    <!-- НОВАЯ КНОПКА ЧАТОВ -->
+    <button class="btn-chats" id="btnChats" onclick="openChatsModal()">
+        💬 Чаты
+        <span class="chat-badge" id="chatUnreadBadge">0</span>
+    </button>
+
+    <div class="user-wrapper">
+        <button class="btn-login" id="btnLogin">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1D252C" stroke-width="2" stroke-linecap="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Войти
+        </button>
+        <div class="user-pill" id="userPill" onclick="toggleDropdown()">
+            <div class="user-avatar-placeholder" id="userAvatarPlaceholder">А</div>
+            <img class="user-avatar" id="userAvatarImg" src="" alt="" style="display:none">
+            <span id="userDisplayName">Пользователь</span>
+        </div>
+        <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-item" onclick="openProfileModal()">👤 Мой профиль</div>
+            <div class="user-dropdown-item" onclick="openCargoModal()">📦 Мои грузы</div>
+            <div class="user-dropdown-item" onclick="openTruckModal()">🚛 Мои машины</div>
+            <div class="user-dropdown-item danger" onclick="signOut()">Выйти</div>
+        </div>
+    </div>
+</div>
+</header>
+
+        <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+            <div class="modal" id="loginModal">
+                <button class="modal-close" onclick="closeModal()">✕</button>
+
+                <div class="modal-logo">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14 18H6C4.89543 18 4 17.1046 4 16V6C4 4.89543 4.89543 4 6 4H14V18Z" fill="#1565C0" stroke="#1565C0" stroke-width="1.2"/>
+                        <path d="M14 8H20L23 12V16C23 17.1046 22.1046 18 21 18H14V8Z" fill="#1565C0" stroke="#1565C0" stroke-width="1.2"/>
+                        <circle cx="7.5" cy="18.5" r="2.5" fill="#FFFFFF" stroke="#1565C0" stroke-width="1"/>
+                        <circle cx="17.5" cy="18.5" r="2.5" fill="#FFFFFF" stroke="#1565C0" stroke-width="1"/>
+                    </svg>
+                    TransX.kz
+                </div>
+
+                <div id="authMethodsBlock">
+                    <div class="modal-title" id="modalTitle">Вход в аккаунт</div>
+                    <div class="modal-sub" id="modalSub">Войдите, чтобы публиковать грузы и машины, а также видеть все контакты</div>
+
+                    <button class="btn-google" onclick="handleAuth('google')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        </svg>
+                        <span id="btnGoogleText">Войти через Google</span>
+                    </button>
+                    <div class="modal-divider">или</div>
+                    <div class="modal-bottom-row">
+                        <button class="btn-telegram" onclick="handleAuth('telegram')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#2CA5E0" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.06c.245-.218-.054-.34-.378-.124l-6.87 4.33-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.46c.534-.196 1.006.128.832.941z"/>
+                            </svg>
+                            Telegram
+                        </button>
+                        <button class="btn-register" id="btnToggleMode" onclick="toggleAuthMode()">Нет аккаунта?</button>
+                    </div>
+                </div>
+
+                <div id="nameStepBlock" style="display: none;">
+                    <div class="modal-title">Завершение регистрации</div>
+                    <div class="modal-sub">Пожалуйста, укажите ваши данные для корректного отображения в объявлениях</div>
+                    <div class="name-step-form">
+                        <div class="form-group">
+                            <label>Ваше Имя *</label>
+                            <input type="text" id="registerFirstName" placeholder="Иван">
+                        </div>
+                        <div class="form-group">
+                            <label>Ваша Фамилия</label>
+                            <input type="text" id="registerLastName" placeholder="Иванов">
+                        </div>
+                        <button class="btn-submit-name" onclick="submitRegistrationName()">Сохранить и войти</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="profileModalOverlay" onclick="closeProfileModalOutside(event)">
+            <div class="modal">
+                <button class="modal-close" onclick="closeProfileModal()">✕</button>
+                <div class="modal-title">👤 Профиль пользователя</div>
+                <div class="modal-sub">Управляйте контактной информацией для связи по объявлениям</div>
+                <div class="profile-form-grid">
+                    <div class="profile-avatar-container">
+                        <div class="profile-big-avatar" id="profileBigAvatar">U</div>
+                        <div>
+                            <h4 id="profileFullTitleName" style="font-size: 15px; font-weight:700; color:#1D252C;">Пользователь</h4>
+                            <p id="profileProviderLabel" style="font-size: 11px; color:#7A869A; text-transform: uppercase; font-weight:600; letter-spacing:0.4px;">Google аккаунт</p>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group grid-2">
+                            <label>Имя</label>
+                            <input type="text" id="profileFirstName" placeholder="Имя">
+                        </div>
+                        <div class="form-group grid-2">
+                            <label>Фамилия</label>
+                            <input type="text" id="profileLastName" placeholder="Фамилия">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Номер телефона (для WhatsApp и звонков) *</label>
+                        <input type="tel" id="profilePhone" placeholder="77071234567">
+                    </div>
+                    <button class="btn-submit-name" style="margin-top: 10px;" onclick="saveProfileChanges()">Сохранить изменения</button>
+                </div>
+            </div>
+        </div>
+
+    <div class="modal-overlay" id="cargoModalOverlay" onclick="closeCargoModalOutside(event)">
+    <div class="modal modal-large">
+        <button class="modal-close" onclick="closeCargoModal()">✕</button>
+        <div class="modal-title">📦 Управление вашими грузами</div>
+        <div class="modal-sub">Здесь вы можете добавить новое объявление или удалить старые</div>
+        
+<div class="cargo-add-minimal-box">
+            <div class="cargo-add-minimal-title">
+                ➕ Добавить новое объявление о грузе
+            </div>
+            
+            <div class="cargo-form-grid">
+                
+                <div class="input-group">
+                    <span class="input-label">Откуда *</span>
+                    <input type="text" id="newCargoFrom" placeholder="Город погрузки" autocomplete="off">
+                    <div id="addCargoFromSuggestions" class="autocomplete-suggestions"></div>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-label">Куда *</span>
+                    <input type="text" id="newCargoTo" placeholder="Город выгрузки" autocomplete="off">
+                    <div id="addCargoToSuggestions" class="autocomplete-suggestions"></div>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-label">Тип груза</span>
+                    <select id="newCargoKind">
+                        <option value="Обычный">Обычный</option>
+                        <option value="Негабарит">Негабарит</option>
+                        <option value="Скоропорт">Скоропорт</option>
+                        <option value="Опасный">Опасный</option>
+                        <option value="ЖД контейнер">ЖД контейнер</option>
+                        <option value="Сборный">Сборный</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <span class="input-label">Способ погрузки</span>
+                    <select id="newCargoLoading">
+                        <option value="Задняя">Задняя</option>
+                        <option value="Верхняя">Верхняя</option>
+                        <option value="Боковая">Боковая</option>
+                        <option value="Гидролифт">Гидролифт</option>
+                        <option value="Требуется кран">Требуется кран</option>
+                        <option value="Самовыгруз">Самовыгруз</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-label">Вес (т)</span>
+                    <input type="text" id="newCargoWeightTons" placeholder="Напр. 5">
+                </div>
+
+                <div class="input-group">
+                    <span class="input-label">Объём (м³)</span>
+                    <input type="text" id="newCargoVolume" placeholder="Напр. 40">
+                </div>
+
+                <div class="input-group">
+                    <span class="input-label">Паллеты</span>
+                    <input type="number" id="newCargoPallets" placeholder="Кол-во паллет">
+                </div>
+
+                <div class="input-group">
+                    <span class="input-label">Длина кузова (м)</span>
+                    <input type="text" id="newCargoLength" placeholder="Напр. 13.6">
+                </div>
+
+                <div class="input-group">
+                    <span class="input-label">Расстояние (км)</span>
+                    <input type="text" id="newCargoDistance" placeholder="Напр. 1200">
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-label">Стоимость *</span>
+                    <div class="price-currency-group">
+                        <input type="number" id="newCargoPrice" placeholder="Цена">
+                        <select id="newCargoCurrency">
+                            <option value="KZT">₸</option>
+                            <option value="USD">$</option>
+                            <option value="RUB">₽</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group" style="grid-column: span 2;">
+                    <span class="input-label">Телефон для связи *</span>
+                    <input type="tel" id="newCargoPhone" placeholder="77XXXXXXXXX">
+                </div>
+
+                <div class="input-group">
+                    <span class="input-label">Период погрузки: с</span>
+                    <input type="date" id="newCargoDateFrom">
+                </div>
+
+                <div class="input-group">
+                    <span class="input-label">Период погрузки: по</span>
+                    <input type="date" id="newCargoDateTo">
+                </div>
+
+            </div>
+
+            <div class="form-options-row">
+<div style="display:flex; gap:10px; flex-wrap:wrap; align-items: center;">
+    <span class="input-label" style="margin-right: 5px;">Погрузка:</span>
+    <label class="checkbox-label">
+        <input type="radio" name="cargoLoadingType" value="Задняя" checked> Задняя
+    </label>
+    <label class="checkbox-label">
+        <input type="radio" name="cargoLoadingType" value="Верхняя"> Верхняя
+    </label>
+    <label class="checkbox-label">
+        <input type="radio" name="cargoLoadingType" value="Боковая"> Боковая
+    </label>
+</div>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="newCargoBargain">
+                    <span>Возможен торг</span>
+                </label>
+            </div>
+
+            <button class="cargo-submit-btn" onclick="addNewCargo()">Опубликовать объявление</button>
+        </div>
+
+        <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #2D3748; letter-spacing: -0.2px;">📋 Ваши активные объявления:</h4>
+        <div class="my-cargo-list" id="myCargoListBlock">
+            <p style="text-align: center; font-size: 13px; color: #7A869A; padding: 20px;">У вас пока нет добавленных грузов.</p>
+        </div>
+    </div>
+</div>
+
+    <!-- Модалка для машин (мои машины) -->
+    <div class="modal-overlay" id="truckModalOverlay" onclick="closeTruckModalOutside(event)">
+    <div class="modal modal-large">
+        <button class="modal-close" onclick="closeTruckModal()">✕</button>
+        <div class="modal-title">🚛 Управление вашими машинами</div>
+        <div class="modal-sub">Добавьте машину, укажите параметры и контакты — водители увидят ваше объявление</div>
+        
+<div class="cargo-add-minimal-box">
+            <div class="cargo-add-minimal-title">
+                ➕ Добавить объявление о машине
+            </div>
+            
+            <div class="cargo-form-grid">
+                
+                <div class="input-group">
+                    <span class="input-label">Город / База *</span>
+                    <input type="text" id="newTruckBase" placeholder="Город" autocomplete="off">
+                    <div id="addTruckBaseSuggestions" class="autocomplete-suggestions"></div>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-label">Маршрут (куда готовы ехать)</span>
+                    <input type="text" id="newTruckRoute" placeholder="Куда" autocomplete="off">
+                    <div id="addTruckRouteSuggestions" class="autocomplete-suggestions"></div>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-label">Тип кузова/тех</span>
+                    <select id="newTruckType">
+                        <option>Тент</option>
+                        <option>Рефрижератор</option>
+                        <option>Бортовой</option>
+                        <option>Фургон</option>
+                        <option>Еврофура</option>
+                        <option>Газель</option>
+                        <option>Самосвал</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-label">Грузоподъемность</span>
+                    <input type="text" id="newTruckCapacity" placeholder="Напр. 5 т / 20 м³">
+                </div>
+
+                <div class="input-group">
+                    <span class="input-label">Длина кузова (м)</span>
+                    <input type="text" id="newTruckLength" placeholder="Напр. 13.6">
+                </div>
+
+                <div class="input-group">
+                    <span class="input-label">Тип загрузки/разгрузки</span>
+                    <select id="newTruckLoadType">
+                        <option value="Задняя">Задняя</option>
+                        <option value="Верхняя">Верхняя</option>
+                        <option value="Боковая">Боковая</option>
+                        <option value="Кран">Кран</option>
+                        <option value="Самовыгруз">Самовыгруз</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <span class="input-label">Стоимость / услуга</span>
+                    <div class="price-currency-group">
+                        <input type="number" id="newTruckPrice" placeholder="Цена/км или за рейс">
+                        <select id="newTruckCurrency">
+                            <option value="KZT">₸</option>
+                            <option value="USD">$</option>
+                            <option value="RUB">₽</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <span class="input-label">Тип оплаты</span>
+                    <select id="newTruckPaymentType">
+                        <option value="За рейс">За рейс</option>
+                        <option value="За км">За км</option>
+                        <option value="Почасовая">Почасовая</option>
+                        <option value="Аренда">Аренда</option>
+                        <option value="Тендер">Тендер</option>
+                    </select>
+                </div>
+
+                <div class="input-group" style="grid-column: span 2;">
+                    <span class="input-label">Телефон для связи *</span>
+                    <input type="tel" id="newTruckPhone" placeholder="77XXXXXXXXX">
+                </div>
+
+                <div class="input-group">
+                    <span class="input-label">Дата загрузки</span>
+                    <select id="newTruckLoadDate">
+                        <option value="">Не указано</option>
+                        <option value="Сегодня">Сегодня</option>
+                        <option value="Завтра">Завтра</option>
+                        <option value="Выходные">Выходные</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <span class="input-label">Гос. номер</span>
+                    <input type="text" id="newTruckPlate" placeholder="AAA000">
+                </div>
+
+            </div>
+
+            <div class="form-options-row">
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <label class="checkbox-label"><input type="checkbox" id="newTruckOnMap"> Загрузка на карту</label>
+                    <label class="checkbox-label"><input type="checkbox" id="newTruckDashcam"> Видео регистратор</label>
+                    <label class="checkbox-label"><input type="checkbox" id="newTruckAvailableNow"> Доступен сейчас</label>
+                </div>
+            </div>
+
+            <button class="cargo-submit-btn" onclick="addNewTruck()">Опубликовать объявление</button>
+        </div>
+
+        <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #2D3748; letter-spacing: -0.2px;">📋 Ваши активные объявления о машинах:</h4>
+        <div class="my-cargo-list" id="myTruckListBlock">
+            <p style="text-align: center; font-size: 13px; color: #7A869A; padding: 20px;">У вас пока нет добавленных машин.</p>
+        </div>
+    </div>
+</div>
+
+        <div class="toast" id="toast"></div>
+
+        <h1 class="main-title">
+            TransX.kz — биржа для поиска грузов и машин
+            <span class="flag-kz">
+                <svg width="24" height="16" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="24" height="16" rx="1" fill="#00B2CA"/>
+                    <circle cx="12" cy="8" r="3" fill="#FFE100"/>
+                    <path d="M2 2V14M4 4V12" stroke="#FFE100" stroke-width="1" stroke-linecap="round"/>
+                </svg>
+            </span><br>
+            по Казахстану и международным направлениям
+        </h1>
+
+        <div class="search-section">
+            <div class="search-card">
+<div class="form-row route-row">
+
+    <div class="form-group grid-2">
+        <label id="labelFrom">Откуда</label>
+        <input type="text" id="searchFrom">
+    </div>
+
+    <button class="swap-route-btn" onclick="swapRoute()">
+        ⇄
+    </button>
+
+    <div class="form-group grid-2">
+        <label id="labelTo">Куда</label>
+        <input type="text" id="searchTo">
+    </div>
+
+</div>
+                <div class="form-row margin-top-15">
+                    <div class="form-group width-40">
+                        <label id="labelBody">Кузов</label>
+                        <div class="select-wrapper">
+                            <select id="bodyType">
+                                <option value="any" selected>Любой</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group width-20">
+                        <label id="labelWeight">Вес, т</label>
+                        <div class="range-inputs">
+                            <input type="text" id="weightFrom" placeholder="от">
+                            <input type="text" id="weightTo" placeholder="до">
+                        </div>
+                    </div>
+                    <div class="form-group width-25">
+                        <label>Дата</label>
+                        <div class="date-wrapper">
+                            <span class="calendar-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                            </span>
+                            <input type="date" class="date-input" id="searchDate">
+                        </div>
+                    </div>
+                    <div class="form-group width-15 flex-end">
+                        <button class="btn-search" id="btnSearch" onclick="searchItems()">Найти</button>
+                    </div>
+                </div>
+
+                <div style="margin-top:10px;">
+                    <button class="filter-toggle" id="toggleFiltersBtn" onclick="toggleAdvancedFilters()">+ Расширенные фильтры</button>
+                    <div class="advanced-filters" id="advancedFilters">
+                        <div class="filter-row">
+                            <div class="form-group">
+                                <label>Цена от</label>
+                                <input type="number" id="filterPriceFrom" placeholder="от">
+                            </div>
+                            <div class="form-group">
+                                <label>Цена до</label>
+                                <input type="number" id="filterPriceTo" placeholder="до">
+                            </div>
+                            <div class="form-group">
+                                <label>Дата создания</label>
+                                <select id="filterCreated">
+                                    <option value="">Любая</option>
+                                    <option value="today">Сегодня</option>
+                                    <option value="yesterday">Вчера</option>
+                                    <option value="7days">За 7 дней</option>
+                                </select>
+                            </div>
+                        </div>
+
+<div class="filter-row">
+    <div class="form-group">
+        <label>Тип оплаты</label>
+        <select id="filterPaymentType">
+            <option value="">Любой</option>
+            <option value="За рейс">За рейс</option>
+            <option value="За км">За км</option>
+            <option value="Почасовая">Почасовая</option>
+            <option value="Аренда">Аренда</option>
+            <option value="Тендер">Тендер</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items: center;">
+            <span class="input-label" style="margin-right: 5px;">Погрузка:</span>
+            <label class="checkbox-label">
+                <input type="radio" name="cargoLoadingType" value="Задняя" checked> Задняя
+            </label>
+            <label class="checkbox-label">
+                <input type="radio" name="cargoLoadingType" value="Верхняя"> Верхняя
+            </label>
+            <label class="checkbox-label">
+                <input type="radio" name="cargoLoadingType" value="Боковая"> Боковая
+            </label>
+        </div>
+    </div>
+</div>
+
+<div class="filter-row">
+    <div class="form-group">
+        <label>Объём от (м³)</label>
+        <input type="number" id="filterVolumeFrom" placeholder="от" step="any">
+    </div>
+    <div class="form-group">
+        <label>Объём до (м³)</label>
+        <input type="number" id="filterVolumeTo" placeholder="до" step="any">
+    </div>
+    <div class="form-group">
+        <!-- Пусто для выравнивания -->
+    </div>
+</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="promo-card">
+                <h3 id="promoTitle">Публикуйте ваши грузы бесплатно</h3>
+                <p style="margin-bottom: 12px;" id="promoText">TransX — полностью открытая платформа. Обменивайтесь контактами напрямую, без посредников и скрытых комиссий.</p>
+                <button class="btn-search" style="height: 38px; font-size: 11px; margin-top: auto;" id="btnOpenAdd" onclick="openAddModal()">Разместить объявление</button>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-box">
+                <div class="stat-icon-wrapper">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="1.5">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    </svg>
+                </div>
+                <div class="stat-info"><h4>45 000 грузов</h4><p>ежедневно ждут откликов</p></div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon-wrapper">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="1.5">
+                        <path d="M14 18H6C4.89543 18 4 17.1046 4 16V6C4 4.89543 4.89543 4 6 4H14V18Z"/>
+                        <path d="M14 8H20L23 12V16C23 17.1046 22.1046 18 21 18H14V8Z"/>
+                        <circle cx="7.5" cy="18.5" r="2.5"/>
+                        <circle cx="17.5" cy="18.5" r="2.5"/>
+                    </svg>
+                </div>
+                <div class="stat-info"><h4>100 000 машин</h4><p>ежедневно готовы к перевозке</p></div>
+            </div>
+        </div>
+
+        <main class="cargo-section">
+            <div class="cargo-section-header">
+                <div>
+                    <h2 class="cargo-section-title" id="cargoGridTitle">Актуальные грузы в Казахстане</h2>
+                    <p class="cargo-section-subtitle" id="cargoGridSubtitle">Обновлено только что</p>
+                </div>
+                <button class="cargo-refresh-btn" onclick="refreshItems()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                    </svg>
+                    Обновить базу
+                </button>
+            </div>
+
+            <div class="cargo-grid" id="cargoGrid">
+                </div>
+
+            <div class="pagination" id="pagination">
+                <button class="btn-login" id="prevPage">← Назад</button>
+                <div class="page-info" id="pageInfo">Страница 1 из 1</div>
+                <button class="btn-login" id="nextPage">Вперед →</button>
+            </div>
+        </main>
+    </div>
+
+<!-- Модалка чата (детальная переписка) -->
+<div class="modal-overlay" id="chatDetailModalOverlay" onclick="closeChatDetailModalOutside(event)">
+    <div class="modal modal-chat" id="chatDetailModal">
+        <div class="chat-header">
+            <button class="modal-close" style="position: relative; top: 0; right: 0;" onclick="closeChatDetailModal()">✕</button>
+            <div class="chat-header-info">
+                <div class="chat-header-name" id="chatPartnerName">Загрузка...</div>
+                <div class="chat-header-lastseen" id="chatPartnerStatus"></div>
+            </div>
+            <div class="chat-actions">
+
+            </div>
+        </div>
+        
+        <div class="messages-container" id="messagesContainer">
+            <div style="text-align: center; padding: 40px; color: #7A869A;">
+                ⏳ Загрузка сообщений...
+            </div>
+        </div>
+        
+        <div id="phoneRevealBlock" style="display: none;"></div>
+        
+        <div class="chat-input-area">
+            <textarea class="chat-input" id="chatMessageInput" placeholder="Введите сообщение..." rows="1"></textarea>
+            <button class="chat-send-btn" onclick="sendMessage()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+    <!-- Модалка со списком чатов -->
+<div class="modal-overlay" id="chatsModalOverlay" onclick="closeChatsModalOutside(event)">
+    <div class="modal modal-chats">
+        <button class="modal-close" onclick="closeChatsModal()">✕</button>
+        <div class="modal-title">💬 Мои чаты</div>
+        <div class="modal-sub">Переписки с водителями и грузоотправителями</div>
+        
+        <div class="chats-list" id="chatsList">
+            <div class="empty-chats">
+                📭 У вас пока нет чатов<br>
+                Начните диалог, откликнувшись на объявление
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut as firebaseSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, serverTimestamp, deleteDoc, orderBy, onSnapshot, increment } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAATVS6VAwbuxj2ZmYvLOgLeONvsTHkiw",
+            authDomain: "transx-72fe1.firebaseapp.com",
+            projectId: "transx-72fe1",
+            storageBucket: "transx-72fe1.firebasestorage.app",
+            messagingSenderId: "842561566802",
+            appId: "1:842561566802:web:ef897f6e6317429a15c78b",
+            measurementId: "G-SLFMM76W28"
+        };
+
+        
+
+        let app, auth, db, googleProvider;
+        const BOT_TOKEN = "";
+        let currentAuthMode = 'login';
+        let pendingUserData = null;
+
+        // Режим: 'cargo' или 'truck'
+        let currentView = 'cargo';
+
+        // Массивы данных
+        let allCargos = [];
+        let filteredCargos = []; // Хранение отфильтрованных результатов грузов
+        let allTrucks = [];
+        let filteredTrucks = []; // Хранение отфильтрованных результатов машин
+        let isSearching = false; // Состояние поиска для скелетона
+        
+// ========== ЧАТЫ: ФИНАЛЬНАЯ ВЕРСИЯ (БЕЗ ОШИБОК) ==========
+let currentChatId = null;
+let currentChatPartnerId = null;
+let currentChatItem = null;
+let phoneRevealed = false;
+let messagesUnsubscribe = null;
+let activeChatActionMenuId = null;
+// ========== НОВЫЙ КОД: СИСТЕМА ЛИМИТОВ ==========
+// Структура для отслеживания флуда в чатах
+// Формат: floodViolations[userId] = количество нарушений (0-3)
+// Бан хранится в localStorage с временем окончания
+let floodViolations = {}; // В памяти на текущую сессию
+
+// Загружаем нарушения из localStorage при старте
+function loadFloodData() {
+    const saved = localStorage.getItem('transx_flood_violations');
+    if (saved) {
+        try {
+            floodViolations = JSON.parse(saved);
+        } catch(e) {}
+    }
+}
+
+// Сохраняем нарушения
+function saveFloodData() {
+    localStorage.setItem('transx_flood_violations', JSON.stringify(floodViolations));
+}
+
+// Проверка, забанен ли пользователь в чатах
+function isUserBannedFromChats(userId) {
+    const banKey = `transx_chat_ban_${userId}`;
+    const banEndTime = localStorage.getItem(banKey);
+    if (!banEndTime) return false;
+    
+    const now = Date.now();
+    if (now < parseInt(banEndTime)) {
+        return true; // Всё ещё забанен
+    } else {
+        // Бан истёк - удаляем запись
+        localStorage.removeItem(banKey);
+        return false;
+    }
+}
+
+// Получить время окончания бана (для отображения)
+function getBanEndTime(userId) {
+    const banKey = `transx_chat_ban_${userId}`;
+    const banEndTime = localStorage.getItem(banKey);
+    if (!banEndTime) return null;
+    return parseInt(banEndTime);
+}
+
+// Забаннить пользователя на 24 часа
+function banUserFromChats(userId) {
+    const banEndTime = Date.now() + (24 * 60 * 60 * 1000); // 24 часа
+    const banKey = `transx_chat_ban_${userId}`;
+    localStorage.setItem(banKey, banEndTime.toString());
+    
+    // Сбрасываем нарушения при бане
+    floodViolations[userId] = 0;
+    saveFloodData();
+}
+
+// Зафиксировать нарушение (флуд)
+function recordFloodViolation(userId) {
+    if (!floodViolations[userId]) floodViolations[userId] = 0;
+    floodViolations[userId]++;
+    saveFloodData();
+    
+    if (floodViolations[userId] >= 3) {
+        banUserFromChats(userId);
+        return { banned: true, violations: floodViolations[userId] };
+    }
+    return { banned: false, violations: floodViolations[userId] };
+}
+
+// Загружаем данные при старте
+loadFloodData();
+
+// Функция проверки лимита на объявления (1 в 15 минут)
+async function canUserPostAd(userId) {
+    if (!userId) return { allowed: false, reason: "Не авторизован" };
+    
+    try {
+        // Проверяем оба типа объявлений (cargo и trucks)
+        const cargoRef = collection(db, 'cargo');
+        const trucksRef = collection(db, 'trucks');
+        
+        const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
+        
+        const cargoQuery = query(cargoRef, where('userId', '==', userId), where('createdAt', '>=', fifteenMinsAgo));
+        const trucksQuery = query(trucksRef, where('userId', '==', userId), where('createdAt', '>=', fifteenMinsAgo));
+        
+        const [cargoSnapshot, trucksSnapshot] = await Promise.all([
+            getDocs(cargoQuery),
+            getDocs(trucksQuery)
+        ]);
+        
+        const totalRecent = cargoSnapshot.size + trucksSnapshot.size;
+        
+        if (totalRecent >= 1) {
+            // Находим самое старое из недавних объявлений
+            let oldestTime = null;
+            
+            cargoSnapshot.forEach(doc => {
+                const data = doc.data();
+                if (data.createdAt && data.createdAt.toDate) {
+                    const time = data.createdAt.toDate().getTime();
+                    if (!oldestTime || time < oldestTime) oldestTime = time;
+                }
+            });
+            
+            trucksSnapshot.forEach(doc => {
+                const data = doc.data();
+                if (data.createdAt && data.createdAt.toDate) {
+                    const time = data.createdAt.toDate().getTime();
+                    if (!oldestTime || time < oldestTime) oldestTime = time;
+                }
+            });
+            
+            const waitTime = 15 * 60 * 1000 - (Date.now() - oldestTime);
+            const waitMinutes = Math.ceil(waitTime / 60000);
+            
+            return { 
+                allowed: false, 
+                reason: `Можно публиковать только 1 объявление в 15 минут. Подождите ${waitMinutes} мин.`,
+                waitMinutes: waitMinutes
+            };
+        }
+        
+        return { allowed: true };
+    } catch (e) {
+        console.error("Ошибка проверки лимита:", e);
+        return { allowed: true }; // При ошибке разрешаем, чтобы не блокировать пользователя
+    }
+}
+// ========== КОНЕЦ НОВОГО КОДА ==========
+
+// Получение текущего пользователя
+function getCurrentUserId() {
+    const savedUser = localStorage.getItem('transx_user');
+    if (savedUser) {
+        try {
+            return JSON.parse(savedUser).uid;
+        } catch(e) { return null; }
+    }
+    return auth?.currentUser?.uid || null;
+}
+
+window.openChat = async function(itemId, itemType, ownerId, ownerName, itemTitle) {
+    const currentUserId = getCurrentUserId();
+    if (!currentUserId) {
+        showToast("⚠️ Войдите в аккаунт, чтобы начать чат");
+        openModal();
+        return;
+    }
+    
+    if (currentUserId === ownerId) {
+        showToast("ℹ️ Это ваше объявление, вы не можете начать чат с самим собой");
+        return;
+    }
+    
+    closeChatsModal();
+    
+    // ========== НОВЫЙ КОД: ПРОВЕРЯЕМ, ЕСТЬ ЛИ УЖЕ ЧАТ ==========
+    let existingChatId = null;
+    let existingChatData = null;
+    
+    try {
+        const chatsRef = collection(db, 'chats');
+        const q = query(chatsRef, where('participants', 'array-contains', currentUserId));
+        const querySnapshot = await getDocs(q);
+        
+        querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            // Проверяем: в этом чате есть оба участника И это то же объявление
+            if (data.participants && data.participants.includes(ownerId) && data.itemId === itemId) {
+                existingChatId = docSnap.id;
+                existingChatData = data;
+            }
+        });
+    } catch(e) {
+        console.error("Ошибка поиска чата:", e);
+    }
+    // ========== КОНЕЦ НОВОГО КОДА ==========
+    
+    // Сохраняем данные
+    currentChatPartnerId = ownerId;
+    currentChatItem = { id: itemId, type: itemType, title: itemTitle || ownerName, ownerId: ownerId, ownerName: ownerName };
+    
+    // Если чат уже существует - используем его ID
+    if (existingChatId) {
+        currentChatId = existingChatId;
+    } else {
+        currentChatId = null; // Чата нет, создадим при первом сообщении
+    }
+    
+    phoneRevealed = false;
+    
+    document.getElementById('chatPartnerName').textContent = ownerName || 'Пользователь';
+    document.getElementById('chatPartnerStatus').textContent = 'Онлайн';
+    
+    // Очищаем контейнер сообщений
+    const container = document.getElementById('messagesContainer');
+    
+    // Если чат существует - загружаем сообщения
+    if (existingChatId) {
+        loadMessagesRealtime(existingChatId);
+        
+        // Сбрасываем счетчик непрочитанных
+        try {
+            const chatRef = doc(db, 'chats', existingChatId);
+            await setDoc(chatRef, {
+                [`unreadCount_${currentUserId}`]: 0
+            }, { merge: true });
+        } catch(e) {}
+    } else {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #7A869A;">💬 Напишите первое сообщение, чтобы начать диалог</div>';
+        if (messagesUnsubscribe) {
+            messagesUnsubscribe();
+            messagesUnsubscribe = null;
+        }
+    }
+    
+    document.getElementById('chatDetailModalOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    document.getElementById('chatMessageInput').value = '';
+    document.getElementById('chatMessageInput').focus();
+    document.getElementById('phoneRevealBlock').style.display = 'none';
+};
+
+// Поиск или создание чата
+async function findOrCreateChat(currentUserId, ownerId, itemId, itemType) {
+    try {
+        const chatsRef = collection(db, 'chats');
+        const q = query(chatsRef, where('participants', 'array-contains', currentUserId));
+        const querySnapshot = await getDocs(q);
+        
+        let existingChatId = null;
+        querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            if (data.participants && data.participants.includes(ownerId) && data.itemId === itemId) {
+                existingChatId = docSnap.id;
+            }
+        });
+        
+        if (existingChatId) return existingChatId;
+        
+        const newChat = await addDoc(chatsRef, {
+            participants: [currentUserId, ownerId],
+            itemId: itemId,
+            itemType: itemType,
+            itemTitle: itemId,
+            createdAt: serverTimestamp(),
+            lastMessage: "",
+            lastMessageTime: serverTimestamp()
+        });
+        
+        return newChat.id;
+    } catch (e) {
+        console.error("Ошибка в findOrCreateChat:", e);
+        return null;
+    }
+}
+
+// Загрузка сообщений в реальном времени
+function loadMessagesRealtime(chatId) {
+    if (messagesUnsubscribe) {
+        messagesUnsubscribe();
+    }
+    
+    const messagesRef = collection(db, 'messages', chatId, 'messages');
+    const q = query(messagesRef, orderBy('timestamp', 'asc'));
+    
+    messagesUnsubscribe = onSnapshot(q, (snapshot) => {
+        const container = document.getElementById('messagesContainer');
+        if (!container) return;
+        
+        if (snapshot.empty) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: #7A869A;">💬 Нет сообщений. Напишите что-нибудь...</div>';
+            return;
+        }
+        
+        container.innerHTML = '';
+        const currentUserId = getCurrentUserId();
+        
+        snapshot.forEach(docSnap => {
+            const msg = docSnap.data();
+            const messageDiv = createMessageElement(msg, currentUserId);
+            container.appendChild(messageDiv);
+        });
+        
+        container.scrollTop = container.scrollHeight;
+    }, (error) => {
+        console.error("Ошибка загрузки сообщений:", error);
+    });
+}
+
+// Создание элемента сообщения
+function createMessageElement(message, currentUserId) {
+    const isOutgoing = message.senderId === currentUserId;
+    const div = document.createElement('div');
+    div.className = `message ${isOutgoing ? 'message-outgoing' : 'message-incoming'}`;
+    
+    div.innerHTML = `
+        <div class="message-bubble">${escapeHtml(message.text)}</div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <span class="message-time">${formatMessageTime(message.timestamp)}</span>
+            ${isOutgoing && message.read ? '<span class="message-status">✓✓</span>' : ''}
+            ${isOutgoing && !message.read ? '<span class="message-status">✓</span>' : ''}
+        </div>
+    `;
+    
+    return div;
+}
+
+function formatMessageTime(timestamp) {
+    if (!timestamp || !timestamp.toDate) return '';
+    const date = timestamp.toDate();
+    return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+}
+
+window.sendMessage = async function() {
+    const input = document.getElementById('chatMessageInput');
+    const text = input.value.trim();
+    
+    if (!text) return;
+    
+    const currentUserId = getCurrentUserId();
+    if (!currentUserId) {
+        showToast("⚠️ Войдите в аккаунт");
+        return;
+    }
+    
+    // Проверка на бан
+    if (isUserBannedFromChats(currentUserId)) {
+        const banEnd = getBanEndTime(currentUserId);
+        if (banEnd) {
+            const hoursLeft = Math.ceil((banEnd - Date.now()) / (60 * 60 * 1000));
+            showToast(`🚫 Вы забанены в чатах на ${hoursLeft} ч. Нарушение правил (флуд)`);
+        } else {
+            showToast("🚫 Вы забанены в чатах за нарушение правил");
+        }
+        return;
+    }
+    
+    const sendBtn = document.querySelector('.chat-send-btn');
+    if (sendBtn) sendBtn.disabled = true;
+    
+    try {
+        // Если чата ещё нет — создаём
+        if (!currentChatId && currentChatItem && currentChatPartnerId) {
+            currentChatId = await findOrCreateChat(
+                currentUserId, 
+                currentChatPartnerId, 
+                currentChatItem.id, 
+                currentChatItem.type
+            );
+            
+            if (!currentChatId) {
+                showToast("❌ Не удалось создать чат");
+                return;
+            }
+            
+            loadMessagesRealtime(currentChatId);
+        }
+        
+        if (!currentChatId) {
+            showToast("❌ Ошибка: чат не инициализирован");
+            return;
+        }
+        
+        // ========== ПРОВЕРКА НА ФЛУД (исправленная) ==========
+        let floodCheckPassed = true;
+        try {
+            const messagesRef = collection(db, 'messages', currentChatId, 'messages');
+            const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+            
+            const recentMessagesQuery = query(
+                messagesRef, 
+                where('senderId', '==', currentUserId),
+                orderBy('timestamp', 'desc'),
+                limit(10)
+            );
+            
+            const recentSnapshot = await getDocs(recentMessagesQuery);
+            
+            let recentCount = 0;
+            recentSnapshot.forEach(docSnap => {
+                const msgData = docSnap.data();
+                if (msgData.timestamp && msgData.timestamp.toDate) {
+                    const msgTime = msgData.timestamp.toDate();
+                    if (msgTime >= oneMinuteAgo) {
+                        recentCount++;
+                    }
+                }
+            });
+            
+            if (recentCount >= 5) {
+                const violationResult = recordFloodViolation(currentUserId);
+                
+                if (violationResult.banned) {
+                    showToast(`🚫 ФЛУД! Вы забанены в чатах на 24 часа (3 нарушения)`);
+                } else {
+                    const remaining = 3 - violationResult.violations;
+                    showToast(`⚠️ ФЛУД! Предупреждение ${violationResult.violations}/3. Ещё ${remaining} нарушения(й) — и бан на 24 часа`);
+                }
+                floodCheckPassed = false;
+            }
+        } catch (floodError) {
+            console.error("Ошибка проверки флуда:", floodError);
+            // При ошибке пропускаем проверку
+        }
+        
+        if (!floodCheckPassed) return;
+        
+        // Отправляем сообщение
+        const messagesRef = collection(db, 'messages', currentChatId, 'messages');
+        await addDoc(messagesRef, {
+            senderId: currentUserId,
+            text: text,
+            timestamp: serverTimestamp(),
+            read: false
+        });
+        
+        // Обновляем информацию о последнем сообщении
+        const chatRef = doc(db, 'chats', currentChatId);
+        await setDoc(chatRef, {
+            lastMessage: text,
+            lastMessageTime: serverTimestamp(),
+            [`unreadCount_${currentChatPartnerId}`]: increment(1)
+        }, { merge: true });
+        
+        input.value = '';
+        if (input.style) input.style.height = 'auto';
+        
+    } catch (e) {
+        console.error("Ошибка отправки:", e);
+        showToast("❌ Ошибка отправки сообщения: " + e.message);
+    } finally {
+        if (sendBtn) sendBtn.disabled = false;
+        input.focus();
+    }
+};
+
+// Показать номер телефона в чате
+window.revealPhoneInChat = async function() {
+    if (phoneRevealed) return;
+    
+    if (!currentChatItem || !currentChatPartnerId) {
+        showToast("❌ Информация недоступна");
+        return;
+    }
+    
+    let phoneNumber = null;
+    const collectionName = currentChatItem.type === 'cargo' ? 'cargo' : 'trucks';
+    
+    try {
+        const itemRef = doc(db, collectionName, currentChatItem.id);
+        const itemSnap = await getDoc(itemRef);
+        if (itemSnap.exists()) {
+            phoneNumber = itemSnap.data().phone;
+        }
+    } catch(e) {
+        console.error(e);
+    }
+    
+    if (!phoneNumber) {
+        showToast("📞 Номер телефона не указан в объявлении");
+        return;
+    }
+    
+    phoneRevealed = true;
+    const block = document.getElementById('phoneRevealBlock');
+    const formattedPhone = phoneNumber.startsWith('7') ? phoneNumber : '7' + phoneNumber;
+    const displayPhone = `+7 ${formattedPhone.substring(1,4)} ${formattedPhone.substring(4,7)} ${formattedPhone.substring(7,11)}`;
+    
+    block.style.display = 'block';
+    block.innerHTML = `
+        <div class="phone-reveal-banner">
+            <div>
+                <div style="font-size: 11px; color: #E65100;">📞 Контактные данные</div>
+                <div class="phone-number-display">${displayPhone}</div>
+            </div>
+            <a href="https://wa.me/${formattedPhone}" target="_blank" class="phone-reveal-btn">
+                💬 WhatsApp
+            </a>
+        </div>
+    `;
+    
+    showToast("📞 Номер телефона открыт! Можно позвонить или написать в WhatsApp");
+};
+
+// Закрыть модалку чата
+window.closeChatDetailModal = function() {
+    if (messagesUnsubscribe) {
+        messagesUnsubscribe();
+        messagesUnsubscribe = null;
+    }
+    document.getElementById('chatDetailModalOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+    currentChatId = null;
+    currentChatPartnerId = null;
+    phoneRevealed = false;
+};
+
+window.closeChatDetailModalOutside = function(e) {
+    if (e.target === document.getElementById('chatDetailModalOverlay')) {
+        closeChatDetailModal();
+    }
+};
+
+// Открыть модалку чатов
+window.openChatsModal = async function() {
+    const userId = getCurrentUserId();
+    if (!userId) {
+        showToast("⚠️ Войдите в аккаунт, чтобы видеть чаты");
+        openModal();
+        return;
+    }
+    
+    document.getElementById('chatsModalOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+    await loadChatsList(userId);
+};
+
+window.closeChatsModal = function() {
+    closeAllChatActionMenus();
+    document.getElementById('chatsModalOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+};
+
+window.closeChatsModalOutside = function(e) {
+    if (e.target === document.getElementById('chatsModalOverlay')) closeChatsModal();
+};
+
+function closeAllChatActionMenus(exceptChatId = null) {
+    document.querySelectorAll('.chat-actions-menu.open').forEach((menu) => {
+        if (exceptChatId && menu.dataset.chatId === exceptChatId) return;
+        menu.classList.remove('open');
+    });
+    activeChatActionMenuId = exceptChatId;
+}
+
+window.toggleChatDeleteMenu = function(event, chatId) {
+    event.stopPropagation();
+    const menu = event.currentTarget.closest('.chat-actions-menu');
+    if (!menu) return;
+    
+    const shouldOpen = !menu.classList.contains('open');
+    closeAllChatActionMenus();
+    
+    if (shouldOpen) {
+        menu.classList.add('open');
+        activeChatActionMenuId = chatId;
+    }
+};
+
+async function deleteChatEverywhere(chatId) {
+    const currentUserId = getCurrentUserId();
+    if (!currentUserId) return;
+    
+    try {
+        // Сначала удаляем все сообщения в чате (параллельно для скорости)
+        const messagesRef = collection(db, 'messages', chatId, 'messages');
+        const messagesSnapshot = await getDocs(messagesRef);
+        
+        const deletePromises = messagesSnapshot.docs.map((docSnap) => deleteDoc(docSnap.ref));
+        await Promise.all(deletePromises);
+        
+        // Удаляем контейнер сообщений
+        await deleteDoc(doc(db, 'messages', chatId)).catch(() => {});
+        
+        // Удаляем сам чат
+        await deleteDoc(doc(db, 'chats', chatId));
+        
+        return true;
+    } catch (e) {
+        console.error("Ошибка удаления чата:", e);
+        throw e;
+    }
+}
+window.handleChatDeleteClick = async function(event, chatId) {
+    event.stopPropagation();
+    const userId = getCurrentUserId();
+    if (!userId) return;
+    
+    const deleteBtn = event.currentTarget;
+    const chatItem = deleteBtn.closest('.chat-item');
+    const actionsMenu = deleteBtn.closest('.chat-actions-menu');
+    
+    // Мгновенно скрываем элемент чата из UI (оптимистичное обновление)
+    if (chatItem) {
+        chatItem.style.opacity = '0';
+        chatItem.style.transition = 'opacity 0.1s';
+        setTimeout(() => {
+            if (chatItem.parentNode) chatItem.remove();
+        }, 100);
+    }
+    
+    // Закрываем меню действий
+    if (actionsMenu) actionsMenu.classList.remove('open');
+    closeAllChatActionMenus();
+    
+    // Закрываем модалку чата если она открыта для удаляемого чата
+    if (currentChatId === chatId) {
+        closeChatDetailModal();
+    }
+    
+    try {
+        await deleteChatEverywhere(chatId);
+        showToast("🗑️ Чат удалён");
+        
+        // Проверяем, остались ли ещё чаты в списке
+        const chatsContainer = document.getElementById('chatsList');
+        if (chatsContainer && chatsContainer.children.length === 0) {
+            chatsContainer.innerHTML = '<div class="empty-chats">📭 У вас пока нет чатов<br>Начните диалог, откликнувшись на объявление</div>';
+        }
+    } catch (e) {
+        console.error("Ошибка удаления чата:", e);
+        showToast("❌ Не удалось удалить чат");
+        // Если ошибка - возвращаем элемент обратно
+        if (chatItem) {
+            chatItem.style.opacity = '1';
+        }
+    }
+};
+
+document.addEventListener('click', (event) => {
+    if (!event.target.closest('.chat-actions-menu')) {
+        closeAllChatActionMenus();
+    }
+});
+
+// Загрузка списка чатов из Firestore (ИСПРАВЛЕНА)
+async function loadChatsList(userId) {
+    const chatsListDiv = document.getElementById('chatsList');
+    if (!chatsListDiv || !userId) return;
+    
+    // Быстрый скелетон (минимальный)
+    chatsListDiv.innerHTML = '<div style="text-align:center; padding:30px; color:#7A869A;">⏳ Загрузка...</div>';
+    
+    try {
+        const chatsRef = collection(db, 'chats');
+        const q = query(chatsRef, where('participants', 'array-contains', userId));
+        const querySnapshot = await getDocs(q);
+        
+        if (querySnapshot.empty) {
+            chatsListDiv.innerHTML = '<div class="empty-chats">📭 У вас пока нет чатов<br>Начните диалог, откликнувшись на объявление</div>';
+            return;
+        }
+        
+        // Сортируем сразу
+        const docs = [];
+        querySnapshot.forEach(doc => docs.push({ id: doc.id, ...doc.data() }));
+        docs.sort((a, b) => (b.lastMessageTime?.toMillis?.() || 0) - (a.lastMessageTime?.toMillis?.() || 0));
+        
+        // Строим HTML сразу (без анимации)
+        let html = '';
+        
+        for (const chat of docs) {
+            const otherUserId = chat.participants?.find(pid => pid !== userId);
+            let otherUserName = 'Пользователь';
+            let otherUserAvatar = '?';
+            
+            if (otherUserId) {
+                try {
+                    const userSnap = await getDoc(doc(db, 'users', otherUserId));
+                    if (userSnap.exists()) {
+                        otherUserName = userSnap.data().displayName || 'Пользователь';
+                        otherUserAvatar = (otherUserName[0] || '?').toUpperCase();
+                    }
+                } catch(e) {}
+            }
+            
+            const lastMessage = (chat.lastMessage || 'Нет сообщений').substring(0, 50);
+            const unreadCount = chat[`unreadCount_${userId}`] || 0;
+            const avatarColor = getAvatarColor(otherUserId);
+            
+            html += `
+                <div class="chat-item" data-chat-id="${chat.id}" data-item-id="${chat.itemId}" data-item-type="${chat.itemType}" data-partner-id="${otherUserId || ''}" data-partner-name="${escapeHtml(otherUserName)}">
+                    <div class="chat-avatar" style="background-color: ${avatarColor}">${escapeHtml(otherUserAvatar)}</div>
+                    <div class="chat-info">
+                        <div class="chat-name">${escapeHtml(otherUserName)}</div>
+                        <div class="chat-last-message">${escapeHtml(lastMessage)}${lastMessage.length >= 50 ? '...' : ''}</div>
+                    </div>
+                    <div class="chat-meta">
+                        <div class="chat-time">${formatRelativeTime(chat.lastMessageTime)}</div>
+                        ${unreadCount > 0 ? `<div class="chat-unread">${unreadCount > 9 ? '9+' : unreadCount}</div>` : ''}
+                    </div>
+                    <div class="chat-actions-menu" data-chat-id="${chat.id}">
+                        <button class="chat-more-btn" type="button">⋯</button>
+                        <button class="chat-delete-btn" type="button">Удалить чат</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        chatsListDiv.innerHTML = html;
+        
+        // Навешиваем обработчики (быстро, без задержек)
+        document.querySelectorAll('#chatsList .chat-item').forEach(item => {
+            const chatId = item.dataset.chatId;
+            const itemId = item.dataset.itemId;
+            const itemType = item.dataset.itemType;
+            const partnerId = item.dataset.partnerId;
+            const partnerName = item.dataset.partnerName;
+            
+            // Клик по чату
+            item.addEventListener('click', (e) => {
+                if (e.target.classList.contains('chat-more-btn') || 
+                    e.target.classList.contains('chat-delete-btn') ||
+                    e.target.closest('.chat-actions-menu')) {
+                    return;
+                }
+                closeChatsModal();
+                if (itemId && itemType) {
+                    openExistingChat(itemId, itemType, partnerId, partnerName);
+                }
+            });
+            
+            // Кнопка "⋯"
+            const moreBtn = item.querySelector('.chat-more-btn');
+            if (moreBtn) {
+                moreBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const menu = moreBtn.closest('.chat-actions-menu');
+                    const isOpen = menu.classList.contains('open');
+                    closeAllChatActionMenus();
+                    if (!isOpen) menu.classList.add('open');
+                });
+            }
+            
+            // Кнопка "Удалить"
+            const deleteBtn = item.querySelector('.chat-delete-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    handleChatDeleteClick(e, chatId);
+                });
+            }
+        });
+        
+    } catch (e) {
+        console.error("Ошибка загрузки чатов:", e);
+        chatsListDiv.innerHTML = '<div class="empty-chats">❌ Ошибка загрузки чатов</div>';
+    }
+}
+
+function getAvatarColor(userId) {
+    if (!userId) return '#1565C0';
+    const colors = ['#128C7E', '#075E54', '#34B7F1', '#25D366', '#DC143C', '#FF8C00', '#6A5ACD', '#4682B4'];
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+        hash = ((hash << 5) - hash) + userId.charCodeAt(i);
+        hash |= 0;
+    }
+    return colors[Math.abs(hash) % colors.length];
+}
+
+// Открыть существующий чат (ТОЛЬКО если чат уже есть)
+async function openExistingChat(itemId, itemType, partnerId, partnerName) {
+    const currentUserId = getCurrentUserId();
+    if (!currentUserId) {
+        showToast("⚠️ Войдите в аккаунт");
+        openModal();
+        return;
+    }
+    
+    if (!partnerId) {
+        showToast("❌ Невозможно открыть чат: отсутствует собеседник");
+        return;
+    }
+    
+    const chatsRef = collection(db, 'chats');
+    const q = query(chatsRef, where('participants', 'array-contains', currentUserId));
+    const querySnapshot = await getDocs(q);
+    
+    let chatId = null;
+    let chatData = null;
+    querySnapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        if (data.participants && data.participants.includes(partnerId)) {
+            chatId = docSnap.id;
+            chatData = data;
+        }
+    });
+    
+    // ✅ ПРАВИЛЬНО: НЕ создаём чат, а показываем ошибку
+    if (!chatId) {
+        showToast("❌ Чат не найден. Напишите сообщение с объявления, чтобы начать диалог");
+        return;
+    }
+    
+    currentChatId = chatId;
+    currentChatPartnerId = partnerId;
+    currentChatItem = { id: itemId, type: itemType };
+    phoneRevealed = false;
+    
+    document.getElementById('chatPartnerName').textContent = partnerName || 'Пользователь';
+    document.getElementById('chatPartnerStatus').textContent = 'Онлайн';
+    
+    document.getElementById('chatDetailModalOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    loadMessagesRealtime(chatId);
+    document.getElementById('chatMessageInput').value = '';
+    document.getElementById('chatMessageInput').focus();
+    document.getElementById('phoneRevealBlock').style.display = 'none';
+    
+    // Сбрасываем счетчик непрочитанных
+    try {
+        const chatRef = doc(db, 'chats', chatId);
+        await setDoc(chatRef, {
+            [`unreadCount_${currentUserId}`]: 0
+        }, { merge: true });
+    } catch(e) {}
+}
+
+function formatRelativeTime(timestamp) {
+    if (!timestamp) return '';
+    
+    let date;
+    if (timestamp.toDate && typeof timestamp.toDate === 'function') {
+        date = timestamp.toDate();
+    } else if (timestamp instanceof Date) {
+        date = timestamp;
+    } else {
+        return '';
+    }
+    
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'только что';
+    if (diffMins < 60) return `${diffMins} мин`;
+    if (diffHours < 24) return `${diffHours} ч`;
+    if (diffDays === 1) return 'вчера';
+    if (diffDays < 7) return `${diffDays} дн`;
+    return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+}
+
+// Подписка на счётчик непрочитанных
+let unreadUnsubscribe = null;
+
+function subscribeToUnreadCount(userId) {
+    if (unreadUnsubscribe) {
+        unreadUnsubscribe();
+    }
+    if (!userId) return;
+    
+    const chatsRef = collection(db, 'chats');
+    const q = query(chatsRef, where('participants', 'array-contains', userId));
+    
+    unreadUnsubscribe = onSnapshot(q, (snapshot) => {
+        let totalUnread = 0;
+        snapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            const unread = data[`unreadCount_${userId}`] || 0;
+            totalUnread += unread;
+        });
+        
+        const badge = document.getElementById('chatUnreadBadge');
+        if (badge) {
+            if (totalUnread > 0) {
+                let displayText = totalUnread;
+                if (totalUnread > 9) displayText = '9+';
+                if (totalUnread > 99) displayText = '99';
+                badge.textContent = displayText;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    });
+}
+
+// Инициализация чатов
+function initChats() {
+    const userId = getCurrentUserId();
+    if (userId) {
+        subscribeToUnreadCount(userId);
+    }
+}
+
+// Обновим showUserUI для инициализации чатов
+if (typeof window.showUserUI === 'function') {
+    const originalShowUserUI = window.showUserUI;
+    window.showUserUI = function(user) {
+        originalShowUserUI(user);
+        setTimeout(() => initChats(), 500);
+    };
+} else {
+    // Если showUserUI ещё не определена, создаём обёртку
+    window.showUserUI = function(user) {
+        const userPill = document.getElementById('userPill');
+        const btnLogin = document.getElementById('btnLogin');
+        if (userPill && btnLogin) {
+            btnLogin.style.display = 'none';
+            userPill.classList.add('active');
+            const displayName = document.getElementById('userDisplayName');
+            if (displayName) displayName.textContent = user.displayName || 'Пользователь';
+        }
+        setTimeout(() => initChats(), 500);
+    };
+}
+
+// Запускаем при загрузке
+setTimeout(() => initChats(), 1000);
+
+// Auto-resize для textarea в чате
+document.addEventListener('DOMContentLoaded', () => {
+    const textarea = document.getElementById('chatMessageInput');
+    if (textarea) {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+        });
+        
+        textarea.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (typeof window.sendMessage === 'function') window.sendMessage();
+            }
+        });
+    }
+});
+
+// Показать номер телефона в чате
+window.revealPhoneInChat = async function() {
+    if (phoneRevealed) return;
+    
+    if (!currentChatItem || !currentChatPartnerId) {
+        showToast("❌ Информация недоступна");
+        return;
+    }
+    
+    // Получаем телефон владельца объявления
+    let phoneNumber = null;
+    const collectionName = currentChatItem.type === 'cargo' ? 'cargo' : 'trucks';
+    
+    try {
+        const itemRef = doc(db, collectionName, currentChatItem.id);
+        const itemSnap = await getDoc(itemRef);
+        if (itemSnap.exists()) {
+            phoneNumber = itemSnap.data().phone;
+        }
+    } catch(e) {
+        console.error(e);
+    }
+    
+    if (!phoneNumber) {
+        showToast("📞 Номер телефона не указан в объявлении");
+        return;
+    }
+    
+    phoneRevealed = true;
+    const block = document.getElementById('phoneRevealBlock');
+    const formattedPhone = phoneNumber.startsWith('7') ? phoneNumber : '7' + phoneNumber;
+    const displayPhone = `+7 ${formattedPhone.substring(1,4)} ${formattedPhone.substring(4,7)} ${formattedPhone.substring(7,11)}`;
+    
+    block.style.display = 'block';
+    block.innerHTML = `
+        <div class="phone-reveal-banner">
+            <div>
+                <div style="font-size: 11px; color: #E65100;">📞 Контактные данные</div>
+                <div class="phone-number-display">${displayPhone}</div>
+            </div>
+            <a href="https://wa.me/${formattedPhone}" target="_blank" class="phone-reveal-btn">
+                💬 WhatsApp
+            </a>
+        </div>
+    `;
+    
+    showToast("📞 Номер телефона открыт! Можно позвонить или написать в WhatsApp");
+};
+
+// Закрыть модалку чата
+window.closeChatDetailModal = function() {
+    if (messagesUnsubscribe) {
+        messagesUnsubscribe();
+        messagesUnsubscribe = null;
+    }
+    document.getElementById('chatDetailModalOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+    currentChatId = null;
+    currentChatPartnerId = null;
+    phoneRevealed = false;
+};
+
+window.closeChatDetailModalOutside = function(e) {
+    if (e.target === document.getElementById('chatDetailModalOverlay')) {
+        closeChatDetailModal();
+    }
+};
+
+        let currentPage = 1;
+        const itemsPerPage = 15;
+        const avatarColors = ['#128C7E', '#075E54', '#34B7F1', '#25D366', '#DC143C', '#FF8C00', '#6A5ACD', '#4682B4'];
+
+        // ========== СПИСОК ГОРОДОВ КАЗАХСТАНА ДЛЯ АВТОКОМПЛИТА ==========
+const kzCities = [
+    "Актау", "Актобе", "Аку", "Аксу", "Алатау", "Алматы", "Аркалык", "Арыс", "Астана", "Атырау", "Аягоз",
+    "Байконур", "Балкашино", "Балхаш",
+    "Есик",
+    "Жанаозен", "Жаркент", "Жезказган", "Житикара",
+    "Канаша", "Кандыагаш", "Капшагай", "Карабулак", "Караганда", "Каражал", "Карасай", "Каратау", "Каскелен", "Кентау", "Кербулак", "Кок-Жайляу", "Кокпекты", "Коктал", "Кокшетау", "Кордай", "Костанай", "Кульсары", "Курчатов", "Кызылорда",
+    "Лисаковск",
+    "Макинск", "Мамлютка", "Медеу",
+    "Наурызбай",
+    "Павлодар", "Петропавловск", "Приозёрск",
+    "Риддер", "Рудный",
+    "Сарканд", "Сарыагаш", "Сатпаев", "Семей", "Серебрянск", "Степногорск",
+    "Талдыкорган", "Талгар", "Талас", "Тараз", "Текели", "Темиртау", "Туркестан",
+    "Узынагаш", "Уральск", "Усть-Каменогорск",
+    "Хромтау",
+    "Шалкар", "Шардара", "Шымкент", "Шонжы", "Шу",
+    "Щербакты", "Щучинск",
+    "Экибастуз", "Эмба", "Энергетический"
+];
+
+        // ========== РАСШИРЕННЫЙ СПИСОК КУЗОВОВ ПО РК ==========
+const bodyTypesList = [
+    { value: "any", label: "Любая" },
+    { value: "крытая", label: "Крытая" },
+    { value: "открытая", label: "Открытая" },
+    { value: "tent", label: "Тент" },
+    { value: "refrigerator", label: "Рефрижератор" },
+    { value: "изотерм", label: "Изотерм" },
+    { value: "бортовой", label: "Бортовой" },
+    { value: "автобус", label: "Автобус" },
+    { value: "автовоз", label: "Автовоз" },
+    { value: "автовышка", label: "Автовышка" },
+    { value: "автотранспортер", label: "Автотранспортер" },
+    { value: "балковоз", label: "Балковоз" },
+    { value: "бензовоз", label: "Бензовоз" },
+    { value: "бетоновоз", label: "Бетоновоз" },
+    { value: "битумовоз", label: "Битумовоз" },
+    { value: "газовоз", label: "Газовоз" },
+    { value: "зерновоз", label: "Зерновоз" },
+    { value: "контплощадка", label: "Конт.площадка" },
+    { value: "кормовоз", label: "Кормовоз" },
+    { value: "кран", label: "Кран" },
+    { value: "лесовоз", label: "Лесовоз" },
+    { value: "манипулятор", label: "Манипулятор" },
+    { value: "микроавтобус", label: "Микроавтобус" },
+    { value: "муковоз", label: "Муковоз" },
+    { value: "открытыйконт", label: "Открытый Конт." },
+    { value: "панелевоз", label: "Панелевоз" },
+    { value: "погрузчик", label: "Погрузчик" },
+    { value: "самосвал", label: "Самосвал" },
+    { value: "седельныйтягач", label: "Седельный Тягач" },
+    { value: "скотовоз", label: "Скотовоз" },
+    { value: "трал", label: "Трал" },
+    { value: "трубовоз", label: "Трубовоз" },
+    { value: "цельнометалл", label: "Цельнометалл." },
+    { value: "цементовоз", label: "Цементовоз" },
+    { value: "цистерна", label: "Цистерна" },
+    { value: "шаланда", label: "Шаланда" },
+    { value: "щеповоз", label: "Щеповоз" },
+    { value: "эвакуатор", label: "Эвакуатор" },
+    { value: "экскаватор", label: "Экскаватор" }
+];
+
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            googleProvider = new GoogleAuthProvider();
+        } catch (e) {
+            console.error("Firebase init error:", e);
+        }
+
+document.addEventListener('DOMContentLoaded', () => {
+    initBodyTypeSelects();
+    initAutocompleteFields();
+    initAddModalsAutocomplete();
+
+    // Проверяем сессию из куков/локалсторейдж
+    const savedUser = localStorage.getItem('transx_user');
+    if (savedUser) {
+        showUserUI(JSON.parse(savedUser));
+    }
+
+    if (auth) {
+        onAuthStateChanged(auth, async (firebaseUser) => {
+            if (firebaseUser) {
+                const userRef = doc(db, 'users', firebaseUser.uid);
+                const snap = await getDoc(userRef);
+                if (snap.exists()) {
+                    const data = snap.data();
+                    const loggedUser = {
+                        uid: firebaseUser.uid,
+                        displayName: data.displayName || firebaseUser.displayName || 'Пользователь',
+                        avatarColor: data.avatarColor || '#1565C0',
+                        provider: data.provider || 'google',
+                        photoUrl: data.photoUrl || firebaseUser.photoURL || ''
+                    };
+                    localStorage.setItem('transx_user', JSON.stringify(loggedUser));
+                    showUserUI(loggedUser);
+                }
+            }
+        });
+    }
+
+    // По умолчанию груз
+    setView('cargo');
+    
+    // ========== ДОБАВЬТЕ ЭТОТ БЛОК ==========
+    // Автоматическая загрузка объявлений при загрузке страницы
+    setTimeout(() => {
+        console.log("Загрузка объявлений...");
+        loadCargosFromFirebase();
+    }, 500);
+    // ========================================
+});
+
+        // Инициализация выпадающих списков кузовов
+        function initBodyTypeSelects() {
+            const searchSelect = document.getElementById('bodyType');
+            const modalSelect = document.getElementById('newCargoType');
+            const truckSelect = document.getElementById('newTruckType');
+            
+            if (searchSelect) {
+                bodyTypesList.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.value;
+                    opt.textContent = item.label;
+                    searchSelect.appendChild(opt);
+                });
+            }
+            
+            if (modalSelect) {
+                modalSelect.innerHTML = '';
+                bodyTypesList.forEach((item, index) => {
+                    const opt = document.createElement('option');
+                    opt.value = item.label; // Будет сохраняться строковое название в БД
+                    opt.textContent = item.label;
+                    if (index === 0) opt.selected = true;
+                    modalSelect.appendChild(opt);
+                });
+            }
+
+            if (truckSelect) {
+                // если есть truck select, не трогаем — он уже в разметке
+            }
+        }
+
+function initAutocompleteFields() {
+    const inputs = [
+        { element: document.getElementById('searchFrom'), wrapper: document.querySelector('.search-card .form-row:first-child .form-group:first-child') },
+        { element: document.getElementById('searchTo'), wrapper: document.querySelector('.search-card .form-row:first-child .form-group:last-child') },
+        { element: document.getElementById('newCargoFrom'), wrapper: document.querySelector('#cargoModalOverlay .modal .cargo-form-grid .input-group:first-child') },
+        { element: document.getElementById('newCargoTo'), wrapper: document.querySelector('#cargoModalOverlay .modal .cargo-form-grid .input-group:nth-child(2)') }
+    ];
+
+    inputs.forEach(({ element, wrapper }) => {
+        if (!element) return;
+
+        // Создаём контейнер подсказок прямо внутри wrapper'a
+        const suggestionsDiv = document.createElement('div');
+        suggestionsDiv.className = 'autocomplete-suggestions';
+        suggestionsDiv.style.position = 'absolute';
+        suggestionsDiv.style.top = 'calc(100% + 4px)';
+        suggestionsDiv.style.left = '0';
+        suggestionsDiv.style.width = '100%';
+        suggestionsDiv.style.zIndex = '1000';
+        
+        // Добавляем относительное позиционирование для wrapper'a
+        if (wrapper) {
+            wrapper.style.position = 'relative';
+            wrapper.appendChild(suggestionsDiv);
+        } else {
+            // Fallback: привязываем к родителю элемента
+            element.parentNode.style.position = 'relative';
+            element.parentNode.appendChild(suggestionsDiv);
+        }
+
+        element.addEventListener('input', () => {
+            const val = element.value.trim().toLowerCase();
+            suggestionsDiv.innerHTML = '';
+            
+            if (!val) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            const matches = kzCities.filter(city => city.toLowerCase().includes(val));
+
+            if (matches.length === 0) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            matches.forEach(city => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-suggestion-item';
+                item.innerHTML = `<span class="city-icon">📍</span> ${city}`;
+                item.addEventListener('click', () => {
+                    element.value = city;
+                    suggestionsDiv.style.display = 'none';
+                });
+                suggestionsDiv.appendChild(item);
+            });
+
+            suggestionsDiv.style.display = 'block';
+        });
+
+        element.addEventListener('blur', () => {
+            setTimeout(() => {
+                suggestionsDiv.style.display = 'none';
+            }, 200);
+        });
+    });
+}
+
+function initAddModalsAutocomplete() {
+    // Инициализация подсказок для модалки машин
+    const addTruckBase = document.getElementById('newTruckBase');
+    const addTruckBaseSuggestions = document.getElementById('addTruckBaseSuggestions');
+    const addTruckRoute = document.getElementById('newTruckRoute');
+    const addTruckRouteSuggestions = document.getElementById('addTruckRouteSuggestions');
+
+    [ {input:addTruckBase, box:addTruckBaseSuggestions}, {input:addTruckRoute, box:addTruckRouteSuggestions} ].forEach(({input,box})=>{
+        if(!input || !box) return;
+        input.parentNode.style.position = 'relative';
+        box.style.position = 'absolute';
+        box.style.top = 'calc(100% + 4px)';
+        box.style.left = '0';
+        box.style.width = '100%';
+        input.addEventListener('input', function(){
+            const q = this.value.toLowerCase().trim();
+            box.innerHTML = '';
+            if(q.length<1) { box.style.display='none'; return; }
+            const filtered = kzCities.filter(c=> c.toLowerCase().includes(q));
+            if(filtered.length===0){ box.style.display='none'; return; }
+            filtered.forEach(city=>{
+                const item = document.createElement('div');
+                item.className='autocomplete-suggestion-item';
+                item.innerHTML = `<span class="city-icon">📍</span> <span>${city}</span>`;
+                item.addEventListener('click', ()=>{ input.value = city; box.style.display='none'; });
+                box.appendChild(item);
+            });
+            box.style.display='block';
+        });
+        document.addEventListener('click', (e)=>{
+            if (!input.contains(e.target) && !box.contains(e.target)) box.style.display='none';
+        });
+    });
+}
+
+        // ========== РЕАЛЬНАЯ ПОИСКОВАЯ ФИЛЬТРАЦИЯ (Универсальная) ==========
+// Вставьте этот блок вместо старой функции window.searchItems
+function normalizeToDate(value) {
+    // value может быть: 'YYYY-MM-DD', Date, Firestore Timestamp (obj.toDate)
+    if (!value) return null;
+    if (typeof value === 'string') {
+        // создать Date в локальной зоне (00:00)
+        return new Date(value + 'T00:00:00');
+    }
+    if (value.toDate && typeof value.toDate === 'function') {
+        const d = value.toDate();
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+    if (value instanceof Date) {
+        return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+    }
+    return null;
+}
+
+function isDateBetween(targetDate, fromDate, toDate) {
+    if (!targetDate) return false;
+    if (fromDate && toDate) return targetDate >= fromDate && targetDate <= toDate;
+    if (fromDate && !toDate) return targetDate >= fromDate;
+    if (!fromDate && toDate) return targetDate <= toDate;
+    return false;
+}
+
+window.searchItems = function() {
+    const fromVal = document.getElementById('searchFrom').value.trim().toLowerCase();
+    const toVal = document.getElementById('searchTo').value.trim().toLowerCase();
+    const bodySelect = document.getElementById('bodyType');
+    const selectedBodyLabel = bodySelect.options[bodySelect.selectedIndex].text.toLowerCase();
+    const selectedBodyValue = bodySelect.value;
+    
+    const wFrom = parseFloat(document.getElementById('weightFrom').value.trim()) || 0;
+    const wTo = parseFloat(document.getElementById('weightTo').value.trim()) || Infinity;
+
+    // advanced filters values
+    const priceFrom = parseFloat(document.getElementById('filterPriceFrom').value) || 0;
+    const priceTo = parseFloat(document.getElementById('filterPriceTo').value) || Infinity;
+    const createdFilter = document.getElementById('filterCreated').value;
+    const filterPaymentType = document.getElementById('filterPaymentType').value;
+    // ⚠️ Удалены опасные строки (filterOptNDS, filterOptUrgent, filterOptCustoms, filterLengthMin)
+    // Вместо них используем заглушки, чтобы код не ломался
+    const filterOptNDS = false;
+    const filterOptUrgent = false;
+    const filterOptCustoms = false;
+    const filterLengthMin = 0;
+
+    // searchDate
+    const searchDateRaw = document.getElementById('searchDate')?.value || '';
+    const searchDate = searchDateRaw ? normalizeToDate(searchDateRaw) : null;
+        const filterLoadingType = document.querySelector('input[name="cargoLoadingType"]:checked')?.value || '';
+
+    isSearching = true;
+    currentPage = 1;
+    renderCurrentPage();
+
+    setTimeout(async () => {
+        const now = new Date();
+
+        function passCreatedFilter(itemCreatedAt) {
+            if (!createdFilter) return true;
+            if (!itemCreatedAt) return false;
+            const created = normalizeToDate(itemCreatedAt);
+            if (!created) return false;
+            const diffMs = now - created;
+            if (createdFilter === 'today') return created.toDateString() === now.toDateString();
+            if (createdFilter === 'yesterday') {
+                const y = new Date(now); y.setDate(now.getDate() - 1);
+                return created.toDateString() === y.toDateString();
+            }
+            if (createdFilter === '7days') return diffMs <= 7 * 24 * 3600 * 1000;
+            return true;
+        }
+
+        if (currentView === 'cargo') {
+            filteredCargos = allCargos.filter(cargo => {
+                if (fromVal && (!cargo.from || !cargo.from.toLowerCase().includes(fromVal))) return false;
+                if (toVal && (!cargo.to || !cargo.to.toLowerCase().includes(toVal))) return false;
+                if (selectedBodyValue !== 'any') {
+                    if (!cargo.type || !cargo.type.toLowerCase().includes(selectedBodyLabel)) return false;
+                }
+                const cargoWeightNum = parseFloat(cargo.weightTons || cargo.weight) || NaN;
+                if (!isNaN(cargoWeightNum)) {
+                    if (cargoWeightNum < wFrom || cargoWeightNum > wTo) return false;
+                } else if (wFrom > 0) return false;
+                const priceNum = parseFloat(cargo.price) || 0;
+                if (priceNum < priceFrom || priceNum > priceTo) return false;
+                const lengthNum = parseFloat(cargo.length) || 0;
+                if (filterLengthMin > 0 && lengthNum < filterLengthMin) return false;
+                if (filterOptNDS && !cargo.options?.nds) return false;
+                if (filterOptUrgent && !cargo.options?.urgent) return false;
+                if (filterOptCustoms && !cargo.options?.customs) return false;
+                if (!passCreatedFilter(cargo.createdAt)) return false;
+                if (filterLoadingType && cargo.loadingType !== filterLoadingType) return false;
+                if (searchDate) {
+                    let matched = false;
+                    const fromPeriod = normalizeToDate(cargo.periodFrom);
+                    const toPeriod = normalizeToDate(cargo.periodTo);
+                    if (fromPeriod || toPeriod) {
+                        matched = isDateBetween(searchDate, fromPeriod, toPeriod);
+                    } else if (cargo.createdAt) {
+                        const created = normalizeToDate(cargo.createdAt);
+                        if (created) matched = created.toDateString() === searchDate.toDateString();
+                    }
+                    if (!matched) return false;
+                }
+                return true;
+            });
+            document.getElementById('cargoGridTitle').textContent = `Результаты поиска грузов (${filteredCargos.length})`;
+        } else {
+            filteredTrucks = allTrucks.filter(truck => {
+                if (fromVal && (!truck.base || !truck.base.toLowerCase().includes(fromVal))) return false;
+                if (toVal && (!truck.route || !truck.route.toLowerCase().includes(toVal))) return false;
+                if (selectedBodyValue !== 'any') {
+                    if (!truck.type || !truck.type.toLowerCase().includes(selectedBodyLabel)) return false;
+                }
+                const capNum = parseFloat(truck.capacity) || NaN;
+                if (!isNaN(capNum)) {
+                    if (capNum < wFrom || capNum > wTo) return false;
+                } else if (wFrom > 0) return false;
+                const priceNum = parseFloat(truck.price) || 0;
+                if (priceNum < priceFrom || priceNum > priceTo) return false;
+                if (filterPaymentType && truck.paymentType !== filterPaymentType) return false;
+                if (filterOptUrgent && !truck.options?.urgent) return false;
+                const lengthNum = parseFloat(truck.length) || 0;
+                if (filterLengthMin > 0 && lengthNum < filterLengthMin) return false;
+                if (!passCreatedFilter(truck.createdAt)) return false;
+                if (searchDate) {
+                    let matched = false;
+                    if (truck.loadDate) {
+                        const ld = truck.loadDate;
+                        if (ld === 'Сегодня') matched = searchDate.toDateString() === now.toDateString();
+                        else if (ld === 'Завтра') {
+                            const t = new Date(now); t.setDate(t.getDate() + 1);
+                            matched = searchDate.toDateString() === t.toDateString();
+                        } else if (ld === 'Выходные') {
+                            const day = searchDate.getDay();
+                            matched = (day === 0 || day === 6);
+                        } else {
+                            const explicit = normalizeToDate(ld);
+                            if (explicit) matched = explicit.toDateString() === searchDate.toDateString();
+                        }
+                    } else if (truck.createdAt) {
+                        const created = normalizeToDate(truck.createdAt);
+                        if (created) matched = created.toDateString() === searchDate.toDateString();
+                    }
+                    if (!matched) return false;
+                }
+                return true;
+            });
+            document.getElementById('cargoGridTitle').textContent = `Результаты поиска машин (${filteredTrucks.length})`;
+        }
+
+        isSearching = false;
+        renderCurrentPage();
+        const found = currentView === 'cargo' ? filteredCargos.length : filteredTrucks.length;
+        showToast(`🔍 Найдено объявлений: ${found}`);
+    }, 500);
+};
+        // Загрузка данных из Firebase Firestore (грузы)
+        async function loadCargosFromFirebase() {
+            const grid = document.getElementById('cargoGrid');
+            if (grid) {
+                grid.innerHTML = '';
+                isSearching = true;
+                renderCurrentPage();
+            }
+
+            try {
+                const cargoRef = collection(db, 'cargo');
+                const q = query(cargoRef, orderBy('createdAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+                
+                allCargos = [];
+                querySnapshot.forEach((docSnap) => {
+                    allCargos.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                
+                filteredCargos = [...allCargos]; // Изначально все данные доступны
+                isSearching = false;
+
+                document.getElementById('cargoGridTitle').textContent = "Актуальные грузы в Казахстане";
+
+                renderCurrentPage();
+            } catch (e) {
+                console.error("Error fetching cargo documents: ", e);
+                isSearching = false;
+                renderCurrentPage();
+                showToast("❌ Не удалось обновить базу данных грузов");
+            }
+        }
+
+        // Загрузка данных из Firebase Firestore (машины)
+        async function loadTrucksFromFirebase() {
+            const grid = document.getElementById('cargoGrid');
+            if (grid) {
+                grid.innerHTML = '';
+                isSearching = true;
+                renderCurrentPage();
+            }
+
+            try {
+                const truckRef = collection(db, 'trucks');
+                const q = query(truckRef, orderBy('createdAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+                
+                allTrucks = [];
+                querySnapshot.forEach((docSnap) => {
+                    allTrucks.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                
+                filteredTrucks = [...allTrucks]; // Изначально все данные доступны
+                isSearching = false;
+
+                document.getElementById('cargoGridTitle').textContent = "Актуальные машины в Казахстане";
+
+                renderCurrentPage();
+            } catch (e) {
+                console.error("Error fetching truck documents: ", e);
+                isSearching = false;
+                renderCurrentPage();
+                showToast("❌ Не удалось обновить базу данных машин");
+            }
+        }
+
+        function renderCurrentPage() {
+            const grid = document.getElementById('cargoGrid');
+            if (!grid) return;
+
+            // Если включен режим поиска/загрузки - показываем скелетон-анимацию
+            if (isSearching) {
+                grid.innerHTML = '';
+                for (let i = 0; i < 3; i++) {
+                    const sk = document.createElement('div');
+                    sk.className = 'skeleton-card';
+                    sk.innerHTML = `
+                        <div class="skeleton-line" style="width: 70%; height: 20px;"></div>
+                        <div class="skeleton-line" style="width: 40%; height: 14px; margin-top: 5px;"></div>
+                        <div class="skeleton-line" style="width: 100%; height: 45px; margin-top: 10px;"></div>
+                        <div class="skeleton-line" style="width: 50%; height: 24px; margin-top: 15px;"></div>
+                    `;
+                    grid.appendChild(sk);
+                }
+                document.getElementById('pagination').style.display = 'none';
+                return;
+            }
+
+            const items = currentView === 'cargo' ? filteredCargos : filteredTrucks;
+
+            if (items.length === 0) {
+                grid.innerHTML = `<div class="empty-cargos">📭 Подходящих объявлений не найдено. Измените параметры поиска.</div>`;
+                document.getElementById('pagination').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('pagination').style.display = 'flex';
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageItems = items.slice(start, end);
+            
+            grid.innerHTML = '';
+            pageItems.forEach(item => {
+                if (currentView === 'cargo') grid.appendChild(createCargoCard(item));
+                else grid.appendChild(createTruckCard(item));
+            });
+
+            const totalPages = Math.ceil(items.length / itemsPerPage) || 1;
+            const pageInfo = document.getElementById('pageInfo');
+            if (pageInfo) {
+                pageInfo.textContent = `Страница ${currentPage} из ${totalPages}`;
+            }
+
+            // Обновляем состояние кнопок пагинации
+            const prevBtn = document.getElementById('prevPage');
+            const nextBtn = document.getElementById('nextPage');
+            if (prevBtn) prevBtn.disabled = currentPage === 1;
+            if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+        }
+
+function createCargoCard(cargo) {
+    const card = document.createElement('div');
+    card.className = 'cargo-card';
+    
+    // Защищаем ВСЕ данные
+    const safeFrom = escapeHtml(cargo.from || '?');
+    const safeTo = escapeHtml(cargo.to || '?');
+    const safeKind = escapeHtml(cargo.kind || cargo.type || 'Груз');
+    const safeWeight = escapeHtml(cargo.weightTons || cargo.weight || '—');
+    const safeVolume = escapeHtml(cargo.volume || cargo.volumeM3 || '—');
+    const safePrice = escapeHtml(cargo.price || '—');
+    const safePhone = escapeHtml(cargo.phone || '');
+    const currencySymbol = getCurrencySymbol(cargo.currency || 'KZT');
+    
+    card.innerHTML = `
+        <div class="cargo-route">
+            <span class="cargo-city">${safeFrom}</span>
+            <span class="cargo-arrow">→</span>
+            <span class="cargo-city">${safeTo}</span>
+        </div>
+        <div class="cargo-type">${safeKind}</div>
+        <div class="cargo-meta">
+            <div class="cargo-meta-item">
+                <span class="cargo-meta-label">Вес</span>
+                <span class="cargo-meta-value">${safeWeight} т</span>
+            </div>
+            <div class="cargo-meta-item">
+                <span class="cargo-meta-label">Объём</span>
+                <span class="cargo-meta-value">${safeVolume} м³</span>
+            </div>
+        </div>
+        <div class="cargo-card-bottom">
+            <div class="cargo-price">${safePrice} ${currencySymbol}</div>
+            <div style="display: flex; gap: 8px;">
+                <button class="cargo-contact-btn" onclick="revealPhoneNumber(this, '${safePhone}')">
+                    📞 Показать
+                </button>
+                <button class="cargo-contact-btn" onclick="openChat('${cargo.id}', 'cargo', '${cargo.userId}', '${safeFrom} → ${safeTo}', '${safeFrom}')">
+                    💬 Написать
+                </button>
+            </div>
+        </div>
+    `;
+    return card;
+}
+
+function createTruckCard(truck) {
+    const card = document.createElement('div');
+    card.className = 'cargo-card';
+    
+    // ЗАЩИТА - все поля обрабатываем через escapeHtml
+    const safeBase = escapeHtml(truck.base || '?');
+    const safeRoute = escapeHtml(truck.route || 'Любой');
+    const safeType = escapeHtml(truck.type || 'Машина');
+    const safePaymentType = escapeHtml(truck.paymentType || '');
+    const safeCapacity = escapeHtml(truck.capacity || '—');
+    const safeLength = escapeHtml(truck.length || '—');
+    const safePlate = escapeHtml(truck.plate || '—');
+    const safePrice = escapeHtml(truck.price || '—');
+    const safePhone = escapeHtml(truck.phone || '');
+    const currencySymbol = getCurrencySymbol(truck.currency || 'KZT');
+    
+    card.innerHTML = `
+        <div class="cargo-route">
+            <span class="cargo-city">${safeBase}</span>
+            <span class="cargo-arrow">→</span>
+            <span class="cargo-city">${safeRoute}</span>
+        </div>
+        <div class="cargo-type">🚛 ${safeType} · ${safePaymentType}</div>
+        <div class="cargo-meta">
+            <div class="cargo-meta-item">
+                <span class="cargo-meta-label">Грузоподъёмность</span>
+                <span class="cargo-meta-value">${safeCapacity}</span>
+            </div>
+            <div class="cargo-meta-item">
+                <span class="cargo-meta-label">Длина</span>
+                <span class="cargo-meta-value">${safeLength} м</span>
+            </div>
+            <div class="cargo-meta-item">
+                <span class="cargo-meta-label">Номер</span>
+                <span class="cargo-meta-value">${safePlate}</span>
+            </div>
+        </div>
+        <div class="cargo-card-bottom">
+            <div class="cargo-price">${safePrice} ${currencySymbol}</div>
+            <div style="display: flex; gap: 8px;">
+                <button class="cargo-contact-btn" onclick="openChat('${truck.id}', 'truck', '${truck.userId}', '${safeBase} → ${safeRoute}', '${safeBase}')">
+                    💬 Написать
+                </button>
+                <button class="cargo-contact-btn" style="background:#25D366;" onclick="revealPhoneNumber(this, '${safePhone}')">
+                    📞 Показать
+                </button>
+            </div>
+        </div>
+    `;
+    return card;
+}
+
+function escapeHtml(str) {
+    if (str === undefined || str === null) return '';
+    if (typeof str !== 'string') str = String(str);
+    
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/`/g, '&#96;')
+        .replace(/\//g, '&#x2F;')
+        .replace(/=/g, '&#61;')
+        .replace(/\(/g, '&#40;')
+        .replace(/\)/g, '&#41;');
+}
+
+window.refreshItems = function() {
+    // Очищаем основные поля поиска
+    const searchFrom = document.getElementById('searchFrom');
+    if (searchFrom) searchFrom.value = '';
+    const searchTo = document.getElementById('searchTo');
+    if (searchTo) searchTo.value = '';
+    const bodyType = document.getElementById('bodyType');
+    if (bodyType) bodyType.value = 'any';
+    const weightFrom = document.getElementById('weightFrom');
+    if (weightFrom) weightFrom.value = '';
+    const weightTo = document.getElementById('weightTo');
+    if (weightTo) weightTo.value = '';
+
+    // Безопасный сброс расширенных фильтров (если они существуют)
+    const priceFrom = document.getElementById('filterPriceFrom');
+    if (priceFrom) priceFrom.value = '';
+    const priceTo = document.getElementById('filterPriceTo');
+    if (priceTo) priceTo.value = '';
+    const created = document.getElementById('filterCreated');
+    if (created) created.value = '';
+    const paymentType = document.getElementById('filterPaymentType');
+    if (paymentType) paymentType.value = '';
+
+    const nds = document.getElementById('filterOptNDS');
+    if (nds) nds.checked = false;
+    const urgent = document.getElementById('filterOptUrgent');
+    if (urgent) urgent.checked = false;
+    const customs = document.getElementById('filterOptCustoms');
+    if (customs) customs.checked = false;
+    const lengthMin = document.getElementById('filterLengthMin');
+    if (lengthMin) lengthMin.value = '';
+
+    currentPage = 1;
+    if (currentView === 'cargo') {
+        loadCargosFromFirebase();
+    } else {
+        loadTrucksFromFirebase();
+    }
+    showToast('🔄 База успешно обновлена!');
+};
+
+        // Обработчики пагинации
+        document.getElementById('prevPage')?.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderCurrentPage();
+                window.scrollTo({ top: document.querySelector('.cargo-section').offsetTop - 20, behavior: 'smooth' });
+            }
+        });
+
+        document.getElementById('nextPage')?.addEventListener('click', () => {
+            const items = currentView === 'cargo' ? filteredCargos : filteredTrucks;
+            const totalPages = Math.ceil(items.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderCurrentPage();
+                window.scrollTo({ top: document.querySelector('.cargo-section').offsetTop - 20, behavior: 'smooth' });
+            }
+        });
+
+        // ========== ВСЯ ОСТАЛЬНАЯ ЛОГИКА АВТОРИЗАЦИИ И МОДАЛОК (БЕЗ ИЗМЕНЕНИЙ) ==========
+        window.handleAuth = async function(providerType) {
+            if (!auth) {
+                showToast("❌ Сервис авторизации временно недоступен");
+                return;
+            }
+            if (providerType === 'google') {
+                try {
+                    const result = await signInWithPopup(auth, googleProvider);
+                    const user = result.user;
+                    await processAuthFlow(user.uid, user.email, user.displayName, 'google');
+                } catch (error) {
+                    console.error(error);
+                    showToast("❌ Ошибка входа через Google: " + error.message);
+                }
+            } else if (providerType === 'telegram') {
+                const width = 550, height = 470;
+                const left = (screen.width - width) / 2;
+                const top = (screen.height - height) / 2;
+                const botId = BOT_TOKEN.split(':')[0];
+                const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=${encodeURIComponent(window.location.origin)}&embed=1`;
+                const telegramPopup = window.open(authUrl, 'tg_auth_popup', `width=${width},height=${height},top=${top},left=${left},toolbar=0,status=0`);
+                
+                window.addEventListener('message', async function onMessage(event) {
+                    if (event.source !== telegramPopup) return;
+                    if (event.data && event.data.event === 'auth_result') {
+                        const data = event.data.result;
+                        window.removeEventListener('message', onMessage);
+                        telegramPopup.close();
+                        const uid = 'tg_' + data.id;
+                        const defaultName = data.first_name + (data.last_name ? ' ' + data.last_name : '');
+                        await processAuthFlow(uid, null, defaultName, 'telegram');
+                    }
+                });
+            }
+        };
+
+        async function processAuthFlow(uid, email, defaultName, provider) {
+            const userRef = doc(db, 'users', uid);
+            const snap = await getDoc(userRef);
+
+            if (currentAuthMode === 'login') {
+                if (!snap.exists()) {
+                    showToast('❌ Такого аккаунта нет. Пожалуйста, зарегистрируйтесь.');
+                    if (auth.currentUser) await firebaseSignOut(auth);
+                    return;
+                }
+                const existData = snap.data();
+                await setDoc(userRef, { lastLogin: serverTimestamp() }, { merge: true });
+                const loggedUser = {
+                    uid: uid,
+                    displayName: existData.displayName || defaultName || 'Пользователь',
+                    avatarColor: existData.avatarColor || avatarColors[Math.floor(Math.random() * avatarColors.length)],
+                    provider: provider,
+                    photoUrl: existData.photoUrl || ''
+                };
+                localStorage.setItem('transx_user', JSON.stringify(loggedUser));
+                showUserUI(loggedUser);
+                showToast('✅ Успешный вход!');
+                closeModal();
+            } else {
+                if (snap.exists()) {
+                    showToast('❌ Такой аккаунт уже существует. Используйте Вход.');
+                    if (auth.currentUser) await firebaseSignOut(auth);
+                    return;
+                }
+                let splitName = (defaultName || '').split(' ');
+                pendingUserData = {
+                    uid: uid,
+                    email: email || '',
+                    firstName: splitName[0] || '',
+                    lastName: splitName[1] || '',
+                    provider: provider
+                };
+                document.getElementById('registerFirstName').value = pendingUserData.firstName;
+                document.getElementById('registerLastName').value = pendingUserData.lastName;
+                document.getElementById('authMethodsBlock').style.display = 'none';
+                document.getElementById('nameStepBlock').style.display = 'block';
+            }
+        }
+
+        window.submitRegistrationName = async function() {
+            if (!pendingUserData) return;
+            const firstName = document.getElementById('registerFirstName').value.trim();
+            const lastName = document.getElementById('registerLastName').value.trim();
+            
+            if (!firstName) {
+                showToast('⚠️ Пожалуйста, укажите имя');
+                return;
+            }
+            const finalName = firstName + (lastName ? ' ' + lastName : '');
+            const randomColor = avatarColors[Math.floor(Math.random() * avatarColors.length)];
+            const userRef = doc(db, 'users', pendingUserData.uid);
+            
+            const newUserData = {
+                uid: pendingUserData.uid,
+                email: pendingUserData.email || '',
+                displayName: finalName,
+                provider: pendingUserData.provider,
+                avatarColor: randomColor,
+                createdAt: serverTimestamp(),
+                lastLogin: serverTimestamp(),
+                photoUrl: '', phone: '', whatsapp: '', telegram: ''
+            };
+
+            try {
+                await setDoc(userRef, newUserData);
+                const localSessionData = {
+                    uid: pendingUserData.uid,
+                    displayName: finalName,
+                    avatarColor: randomColor,
+                    provider: pendingUserData.provider,
+                    photoUrl: ''
+                };
+                localStorage.setItem('transx_user', JSON.stringify(localSessionData));
+                showUserUI(localSessionData);
+                showToast('🎉 Регистрация завершена!');
+                closeModal();
+            } catch (e) {
+                console.error(e);
+                showToast('❌ Ошибка регистрации: ' + e.message);
+            }
+        };
+
+        window.toggleAuthMode = function() {
+            const modalTitle = document.getElementById('modalTitle');
+            const modalSub = document.getElementById('modalSub');
+            const btnToggleMode = document.getElementById('btnToggleMode');
+            const btnGoogleText = document.getElementById('btnGoogleText');
+
+            if (currentAuthMode === 'login') {
+                currentAuthMode = 'register';
+                modalTitle.textContent = 'Создать аккаунт';
+                modalSub.textContent = 'Выберите способ регистрации — данные будут сохранены в новую учетную запись';
+                btnToggleMode.textContent = 'Уже есть аккаунт?';
+                btnGoogleText.textContent = 'Регистрация через Google';
+            } else {
+                currentAuthMode = 'login';
+                modalTitle.textContent = 'Вход в аккаунт';
+                modalSub.textContent = 'Войдите, чтобы публиковать грузы и машины, а также видеть все контакты';
+                btnToggleMode.textContent = 'Нет аккаунта?';
+                btnGoogleText.textContent = 'Войти через Google';
+            }
+        };
+
+        function showUserUI(user) {
+            const btnLogin = document.getElementById('btnLogin');
+            const userPill = document.getElementById('userPill');
+            const avatarPlaceholder = document.getElementById('userAvatarPlaceholder');
+            const avatarImg = document.getElementById('userAvatarImg');
+            const displayName = document.getElementById('userDisplayName');
+
+            if (!btnLogin || !userPill) return;
+            btnLogin.style.display = 'none';
+            userPill.classList.add('active');
+
+            const name = user.displayName || 'Пользователь';
+            displayName.textContent = name.split(' ')[0];
+
+            if (user.photoUrl && user.photoUrl.trim() !== "") {
+                avatarPlaceholder.style.display = 'none';
+                avatarImg.style.display = 'block';
+                avatarImg.src = user.photoUrl;
+            } else {
+                avatarImg.style.display = 'none';
+                avatarPlaceholder.style.display = 'flex';
+                avatarPlaceholder.textContent = name[0]?.toUpperCase() || 'U';
+                avatarPlaceholder.style.backgroundColor = user.avatarColor || '#1565C0';
+            }
+            closeModal();
+
+            // После успешного входа сразу запускаем подписки на чаты и непрочитанные.
+            setTimeout(() => {
+                if (typeof initChats === 'function') initChats();
+            }, 100);
+        }
+
+        function showLoginUI() {
+            const btnLogin = document.getElementById('btnLogin');
+            const userPill = document.getElementById('userPill');
+            if (btnLogin) btnLogin.style.display = 'flex';
+            if (userPill) {
+                userPill.classList.remove('active');
+                document.getElementById('userDropdown')?.classList.remove('active');
+            }
+        }
+
+        window.signOut = async function() {
+            localStorage.removeItem('transx_user');
+            if (auth) {
+                await firebaseSignOut(auth);
+            }
+            if (typeof unreadUnsubscribe === 'function') {
+                unreadUnsubscribe();
+                unreadUnsubscribe = null;
+            }
+            if (typeof chatsListUnsubscribe === 'function') {
+                chatsListUnsubscribe();
+                chatsListUnsubscribe = null;
+            }
+            const badge = document.getElementById('chatUnreadBadge');
+            if (badge) badge.style.display = 'none';
+            document.getElementById('userDropdown')?.classList.remove('active');
+            showLoginUI();
+            showToast('👋 Вы вышли из аккаунта');
+        };
+
+        window.resetModalStates = function() {
+            currentAuthMode = 'login';
+            pendingUserData = null;
+            document.getElementById('authMethodsBlock').style.display = 'block';
+            document.getElementById('nameStepBlock').style.display = 'none';
+            document.getElementById('modalTitle').textContent = 'Вход в аккаунт';
+            document.getElementById('modalSub').textContent = 'Войдите, чтобы публиковать грузы и машины, а также видеть все контакты';
+            document.getElementById('btnToggleMode').textContent = 'Нет аккаунта?';
+            document.getElementById('btnGoogleText').textContent = 'Войти через Google';
+        };
+
+        // ========== ФУНКЦИИ МОДАЛКИ ПРОФИЛЯ ========== 
+        window.openProfileModal = async function() {
+            document.getElementById('userDropdown')?.classList.remove('active');
+            const currentUser = auth ? auth.currentUser : null;
+            if (!currentUser) {
+                showToast("⚠️ Пожалуйста, войдите в аккаунт");
+                openModal();
+                return;
+            }
+            try {
+                showToast("⏳ Загрузка профиля...");
+                const snap = await getDoc(doc(db, 'users', currentUser.uid));
+                if (snap.exists()) {
+                    const data = snap.data();
+                    let names = data.displayName ? data.displayName.split(' ') : ['', ''];
+                    document.getElementById('profileFirstName').value = names[0] || '';
+                    document.getElementById('profileLastName').value = names[1] || '';
+                    document.getElementById('profilePhone').value = data.phone || '';
+                    
+                    document.getElementById('profileFullTitleName').textContent = data.displayName || 'Пользователь';
+                    document.getElementById('profileProviderLabel').textContent = (data.provider || 'google') + ' аккаунт';
+                    
+                    const bigAvatar = document.getElementById('profileBigAvatar');
+                    bigAvatar.textContent = (data.displayName || 'U')[0].toUpperCase();
+                    bigAvatar.style.backgroundColor = data.avatarColor || '#1565C0';
+                }
+                document.getElementById('profileModalOverlay').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } catch (e) {
+                showToast("❌ Ошибка при чтении профиля");
+            }
+        };
+
+        window.closeProfileModal = function() {
+            document.getElementById('profileModalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        };
+
+        window.closeProfileModalOutside = function(e) {
+            if (e.target === document.getElementById('profileModalOverlay')) closeProfileModal();
+        };
+
+        window.saveProfileChanges = async function() {
+            const currentUser = auth ? auth.currentUser : null;
+            if (!currentUser) return;
+
+            const firstName = document.getElementById('profileFirstName').value.trim();
+            const lastName = document.getElementById('profileLastName').value.trim();
+            const phone = document.getElementById('profilePhone').value.trim();
+
+            if (!firstName) {
+                showToast("⚠️ Имя не может быть пустым");
+                return;
+            }
+            if (!phone) {
+                showToast("⚠️ Номер телефона обязателен");
+                return;
+            }
+
+            const finalName = firstName + (lastName ? ' ' + lastName : '');
+            try {
+                showToast("⏳ Сохранение...");
+                const userRef = doc(db, 'users', currentUser.uid);
+                const userSnap = await getDoc(userRef);
+                const existData = userSnap.exists() ? userSnap.data() : {};
+                
+                const updatedData = { displayName: finalName, phone: phone };
+                await setDoc(userRef, updatedData, { merge: true });
+
+                const localSessionData = {
+                    uid: currentUser.uid,
+                    displayName: finalName,
+                    avatarColor: existData.avatarColor || '#1565C0',
+                    provider: existData.provider || 'google',
+                    photoUrl: existData.photoUrl || ''
+                };
+                localStorage.setItem('transx_user', JSON.stringify(localSessionData));
+                showUserUI(localSessionData);
+                showToast("✅ Профиль успешно обновлен!");
+                closeProfileModal();
+            } catch (e) {
+                console.error(e);
+                showToast("❌ Ошибка при сохранении: " + e.message);
+            }
+        };
+
+        // ========== ФУНКЦИИ МОДАЛКИ ГРУЗОВ ========== 
+window.openCargoModal = async function() {
+    document.getElementById('userDropdown')?.classList.remove('active');
+    const currentUser = auth ? auth.currentUser : null;
+    if (!currentUser) {
+        showToast("⚠️ Пожалуйста, войдите в аккаунт");
+        openModal();
+        return;
+    }
+    // Очистка существующих полей
+    document.getElementById('newCargoFrom').value = '';
+    document.getElementById('newCargoTo').value = '';
+    document.getElementById('newCargoWeightTons').value = '';
+    document.getElementById('newCargoVolume').value = '';
+    document.getElementById('newCargoDistance').value = '';
+    document.getElementById('newCargoPrice').value = '';
+    document.getElementById('newCargoPhone').value = '';
+    document.getElementById('newCargoPallets').value = '';
+    document.getElementById('newCargoLength').value = '';
+    document.getElementById('newCargoDateFrom').value = '';
+    document.getElementById('newCargoDateTo').value = '';
+    
+    // Безопасный сброс чекбоксов (если они есть)
+    const nds = document.getElementById('newCargoNDS');
+    if (nds) nds.checked = false;
+    const hourly = document.getElementById('newCargoHourly');
+    if (hourly) hourly.checked = false;
+    const urgent = document.getElementById('newCargoUrgent');
+    if (urgent) urgent.checked = false;
+    const customs = document.getElementById('newCargoCustoms');
+    if (customs) customs.checked = false;
+
+    try {
+        const snap = await getDoc(doc(db, 'users', currentUser.uid));
+        if (snap.exists() && snap.data().phone) {
+            document.getElementById('newCargoPhone').value = snap.data().phone;
+        }
+    } catch(e) {}
+
+    document.getElementById('cargoModalOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+    await loadUserCargoList();
+};
+
+        window.closeCargoModal = function() {
+            document.getElementById('cargoModalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        };
+
+        window.closeCargoModalOutside = function(e) {
+            if (e.target === document.getElementById('cargoModalOverlay')) closeCargoModal();
+        };
+
+async function loadUserCargoList() {
+    const userId = getCurrentUserId(); // из localStorage
+    const listBlock = document.getElementById('myCargoListBlock');
+    if (!userId || !listBlock) {
+        if(listBlock) listBlock.innerHTML = '<p class="empty-cargos">⚠️ Войдите в аккаунт</p>';
+        return;
+    }
+
+    listBlock.innerHTML = '<p style="text-align: center; font-size: 13px; color: #7A869A; padding: 20px;">Загрузка...</p>';
+    try {
+        const cargoRef = collection(db, 'cargo');
+        const q = query(cargoRef, where('userId', '==', userId));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            listBlock.innerHTML = '<p class="empty-cargos">📭 У вас пока нет добавленных грузов.</p>';
+            return;
+        }
+
+        listBlock.innerHTML = "";
+        querySnapshot.forEach((docSnap) => {
+            const item = docSnap.data();
+            const docId = docSnap.id;
+            const currencySymbol = getCurrencySymbol(item.currency || 'KZT');
+            const div = document.createElement('div');
+            div.className = 'my-cargo-item';
+            div.innerHTML = `
+                <div class="my-cargo-info" style="flex: 1;">
+                    <h5>🚛 ${escapeHtml(item.from || '?')} → ${escapeHtml(item.to || '?')}</h5>
+                    <p>📦 ${escapeHtml(item.kind || item.type || 'Груз')} · ⚖️ ${escapeHtml(item.weightTons || item.weight || '—')} т · ${escapeHtml(item.volume || item.volumeM3 || '—')} м³</p>
+                    <p>📍 Паллет: ${escapeHtml(item.pallets || '—')} · Длина: ${escapeHtml(item.length || '—')} м</p>
+                    <p>📞 ${escapeHtml(item.phone || '—')}</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span class="my-cargo-price">${escapeHtml(item.price || '—')} ${currencySymbol}</span>
+                    <button class="cargo-refresh-btn" style="color:#e53e3e; font-weight:700;" onclick="deleteCargoItem('${docId}')">Удалить</button>
+                </div>
+            `;
+            listBlock.appendChild(div);
+        });
+    } catch (e) {
+        listBlock.innerHTML = `<p class="empty-cargos">❌ Ошибка: ${e.message}</p>`;
+    }
+}
+
+        window.deleteCargoItem = async function(docId) {
+            if (confirm('Удалить этот груз?')) {
+                try {
+                    await deleteDoc(doc(db, 'cargo', docId));
+                    showToast('✅ Груз удален');
+                    await loadUserCargoList();
+                    await loadCargosFromFirebase();
+                } catch (e) {
+                    showToast('❌ Ошибка удаления: ' + e.message);
+                }
+            }
+        };
+
+window.addNewCargo = async function() {
+    const currentUser = auth ? auth.currentUser : null;
+    if (!currentUser) {
+        showToast("⚠️ Пожалуйста, войдите в аккаунт");
+        return;
+    }
+
+    const limitCheck = await canUserPostAd(currentUser.uid);
+    if (!limitCheck.allowed) {
+        showToast(`⚠️ ${limitCheck.reason}`);
+        return;
+    }
+
+    const from = document.getElementById('newCargoFrom').value.trim();
+    const to = document.getElementById('newCargoTo').value.trim();
+    const kind = document.getElementById('newCargoKind').value;
+    const loading = document.getElementById('newCargoLoading').value;
+    const weightTons = document.getElementById('newCargoWeightTons').value.trim();
+    const volume = document.getElementById('newCargoVolume').value.trim();
+    const pallets = document.getElementById('newCargoPallets').value.trim();
+    const length = document.getElementById('newCargoLength').value.trim();
+    const distance = document.getElementById('newCargoDistance').value.trim();
+    const price = document.getElementById('newCargoPrice').value.trim();
+    const phone = document.getElementById('newCargoPhone').value.trim();
+    const currency = document.getElementById('newCargoCurrency').value;
+    const dateFrom = document.getElementById('newCargoDateFrom').value || '';
+    const dateTo = document.getElementById('newCargoDateTo').value || '';
+    const loadingType = document.querySelector('input[name="cargoLoadingType"]:checked')?.value || 'Задняя';
+
+    // Убираем options, потому что чекбоксов нет
+    const options = {};
+
+    if (!from || !to) {
+        showToast("⚠️ Заполните поля 'Откуда' и 'Куда'");
+        return;
+    }
+    if (!price) {
+        showToast("⚠️ Укажите цену");
+        return;
+    }
+    if (!phone) {
+        showToast("⚠️ Укажите номер телефона для связи");
+        return;
+    }
+
+    const phoneDigits = phone.replace(/\D/g, '');
+    let formattedPhone = '';
+    if (phoneDigits.startsWith('7') && phoneDigits.length === 11) {
+        formattedPhone = phoneDigits;
+    } else if (phoneDigits.length === 10) {
+        formattedPhone = '7' + phoneDigits;
+    } else {
+        showToast("⚠️ Введите номер в формате: 77001234567 (11 цифр)");
+        return;
+    }
+
+    try {
+        showToast("⏳ Публикация...");
+        const newCargo = {
+            userId: currentUser.uid,
+            from: from,
+            to: to,
+            kind: kind,
+            loading: loading,
+            weightTons: weightTons,
+            volume: volume,
+            pallets: pallets,
+            length: length,
+            distance: distance,
+            price: price,
+            currency: currency,
+            phone: formattedPhone,
+            options: options,
+            loadingType: loadingType,
+            periodFrom: dateFrom || null,
+            periodTo: dateTo || null,
+            createdAt: serverTimestamp()
+        };
+
+        await addDoc(collection(db, 'cargo'), newCargo);
+        showToast("✅ Груз успешно опубликован!");
+        
+        await loadUserCargoList();
+        await loadCargosFromFirebase();
+        
+        // Очищаем форму (только существующие поля)
+        document.getElementById('newCargoFrom').value = '';
+        document.getElementById('newCargoTo').value = '';
+        document.getElementById('newCargoWeightTons').value = '';
+        document.getElementById('newCargoVolume').value = '';
+        document.getElementById('newCargoDistance').value = '';
+        document.getElementById('newCargoPrice').value = '';
+        document.getElementById('newCargoCurrency').value = 'KZT';
+        document.getElementById('newCargoPallets').value = '';
+        document.getElementById('newCargoLength').value = '';
+        document.getElementById('newCargoDateFrom').value = '';
+        document.getElementById('newCargoDateTo').value = '';
+        // Чекбокс торга (newCargoBargain) не сбрасываем, он не мешает
+    } catch (e) {
+        console.error(e);
+        showToast("❌ Ошибка при публикации груза");
+    }
+};
+
+        function getCurrencySymbol(currencyCode) {
+    const symbols = {
+        'KZT': '₸',
+        'USD': '$',
+        'RUB': '₽'
+    };
+    return symbols[currencyCode] || '₸';
+}
+
+function sendTelegramNotification(from, to, type, weight, price, phone, kind = 'cargo') {
+    // Telegram уведомления временно отключены для безопасности
+    console.log("Уведомление не отправлено (безопасный режим)");
+    return;
+}
+
+        // ========== ФУНКЦИИ МОДАЛКИ МАШИН ========== 
+        window.openTruckModal = async function() {
+            document.getElementById('userDropdown')?.classList.remove('active');
+            const currentUser = auth ? auth.currentUser : null;
+            if (!currentUser) {
+                showToast("⚠️ Пожалуйста, войдите в аккаунт");
+                openModal();
+                return;
+            }
+            document.getElementById('newTruckBase').value = '';
+            document.getElementById('newTruckRoute').value = '';
+            document.getElementById('newTruckCapacity').value = '';
+            document.getElementById('newTruckPrice').value = '';
+            document.getElementById('newTruckPhone').value = '';
+            document.getElementById('newTruckLength').value = '';
+            document.getElementById('newTruckLoadDate').value = '';
+            document.getElementById('newTruckPlate').value = '';
+            document.getElementById('newTruckOnMap').checked = false;
+            document.getElementById('newTruckDashcam').checked = false;
+            document.getElementById('newTruckAvailableNow').checked = false;
+
+            try {
+                const snap = await getDoc(doc(db, 'users', currentUser.uid));
+                if (snap.exists() && snap.data().phone) {
+                    document.getElementById('newTruckPhone').value = snap.data().phone;
+                }
+            } catch(e){}
+
+            document.getElementById('truckModalOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            await loadUserTruckList();
+        };
+
+        window.closeTruckModal = function() {
+            document.getElementById('truckModalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        };
+
+        window.closeTruckModalOutside = function(e) {
+            if (e.target === document.getElementById('truckModalOverlay')) closeTruckModal();
+        };
+
+async function loadUserTruckList() {
+    const userId = getCurrentUserId(); // ← меняем на getCurrentUserId
+    const listBlock = document.getElementById('myTruckListBlock');
+    if (!userId || !listBlock) {
+        if (listBlock) listBlock.innerHTML = '<p class="empty-cargos">⚠️ Войдите в аккаунт</p>';
+        return;
+    }
+
+    listBlock.innerHTML = '<p style="text-align: center; font-size: 13px; color: #7A869A; padding: 20px;">Загрузка списка машин...</p>';
+    try {
+        const truckRef = collection(db, 'trucks');
+        const q = query(truckRef, where('userId', '==', userId)); // используем userId
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            listBlock.innerHTML = '<p style="text-align: center; font-size: 13px; color: #7A869A; padding: 20px;">📭 У вас пока нет добавленных машин.</p>';
+            return;
+        }
+
+        listBlock.innerHTML = "";
+        querySnapshot.forEach((docSnap) => {
+            const item = docSnap.data();
+            const docId = docSnap.id;
+            const currencySymbol = getCurrencySymbol(item.currency || 'KZT');
+            const div = document.createElement('div');
+            div.className = 'my-cargo-item';
+            div.innerHTML = `
+                <div class="my-cargo-info" style="flex: 1;">
+                    <h5>🚛 ${escapeHtml(item.base || '?')} → ${escapeHtml(item.route || 'Любой')}</h5>
+                    <p>📦 ${escapeHtml(item.type || '—')} · ⚖️ ${escapeHtml(item.capacity || '—')} · Длина: ${escapeHtml(item.length || '—')} м</p>
+                    <p>📞 ${escapeHtml(item.phone || '—')} · ${escapeHtml(item.plate || '')}</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span class="my-cargo-price">${escapeHtml(item.price || '—')} ${currencySymbol}</span>
+                    <button class="cargo-refresh-btn" style="color:#e53e3e; font-weight:700;" onclick="deleteTruckItem('${docId}')">Удалить</button>
+                </div>
+            `;
+            listBlock.appendChild(div);
+        });
+    } catch (e) {
+        listBlock.innerHTML = `<p style="text-align: center; font-size: 13px; color: #e53e3e; padding: 20px;">❌ Ошибка загрузки: ${e.message}</p>`;
+    }
+}
+
+        window.deleteTruckItem = async function(docId) {
+            if (confirm('Удалить это объявление о машине?')) {
+                try {
+                    await deleteDoc(doc(db, 'trucks', docId));
+                    showToast('✅ Объявление удалено');
+                    await loadUserTruckList();
+                    await loadTrucksFromFirebase();
+                } catch (e) {
+                    showToast('❌ Ошибка удаления: ' + e.message);
+                }
+            }
+        };
+
+window.addNewTruck = async function() {
+    const currentUser = auth ? auth.currentUser : null;
+    if (!currentUser) {
+        showToast("⚠️ Пожалуйста, войдите в аккаунт");
+        return;
+    }
+
+    // ========== НОВЫЙ КОД: ПРОВЕРКА ЛИМИТА ==========
+    const limitCheck = await canUserPostAd(currentUser.uid);
+    if (!limitCheck.allowed) {
+        showToast(`⚠️ ${limitCheck.reason}`);
+        return;
+    }
+
+    const base = document.getElementById('newTruckBase').value.trim();
+    const route = document.getElementById('newTruckRoute').value.trim();
+    const type = document.getElementById('newTruckType').value;
+    const capacity = document.getElementById('newTruckCapacity').value.trim();
+    const price = document.getElementById('newTruckPrice').value.trim();
+    const phone = document.getElementById('newTruckPhone').value.trim();
+    const currency = document.getElementById('newTruckCurrency').value;
+    const availableNow = document.getElementById('newTruckAvailableNow').checked;
+    const length = document.getElementById('newTruckLength').value.trim();
+    const loadType = document.getElementById('newTruckLoadType').value;
+    const paymentType = document.getElementById('newTruckPaymentType').value;
+    const loadDate = document.getElementById('newTruckLoadDate').value;
+    const plate = document.getElementById('newTruckPlate').value.trim();
+    const onMap = document.getElementById('newTruckOnMap').checked;
+    const dashcam = document.getElementById('newTruckDashcam').checked;
+
+    if (!base) {
+        showToast("⚠️ Укажите город/базу");
+        return;
+    }
+    if (!phone) {
+        showToast("⚠️ Укажите номер телефона для связи");
+        return;
+    }
+
+    const phoneDigits = phone.replace(/\D/g, '');
+    let formattedPhone = '';
+    if (phoneDigits.startsWith('7') && phoneDigits.length === 11) {
+        formattedPhone = phoneDigits;
+    } else if (phoneDigits.length === 10) {
+        formattedPhone = '7' + phoneDigits;
+    } else {
+        showToast("⚠️ Введите номер в формате: 77001234567 (11 цифр)");
+        return;
+    }
+
+    try {
+        showToast("⏳ Публикация...");
+        const newTruck = {
+            userId: currentUser.uid,
+            base: base,
+            route: route,
+            type: type,
+            capacity: capacity,
+            price: price,
+            currency: currency,
+            phone: formattedPhone,
+            availableNow: availableNow,
+            length: length,
+            loadType: loadType,
+            paymentType: paymentType,
+            loadDate: loadDate,
+            plate: plate,
+            options: { onMap: onMap, dashcam: dashcam },
+            createdAt: serverTimestamp()
+        };
+
+        await addDoc(collection(db, 'trucks'), newTruck);
+        showToast("✅ Объявление о машине успешно опубликовано!");
+        
+        const currencySymbol = getCurrencySymbol(currency);
+        
+
+        await loadUserTruckList();
+        await loadTrucksFromFirebase();
+        
+        // Очищаем форму
+        document.getElementById('newTruckBase').value = '';
+        document.getElementById('newTruckRoute').value = '';
+        document.getElementById('newTruckCapacity').value = '';
+        document.getElementById('newTruckPrice').value = '';
+        document.getElementById('newTruckCurrency').value = 'KZT';
+        document.getElementById('newTruckAvailableNow').checked = false;
+        document.getElementById('newTruckLength').value = '';
+        document.getElementById('newTruckLoadType').value = '';
+        document.getElementById('newTruckPaymentType').value = '';
+        document.getElementById('newTruckLoadDate').value = '';
+        document.getElementById('newTruckPlate').value = '';
+        document.getElementById('newTruckOnMap').checked = false;
+        document.getElementById('newTruckDashcam').checked = false;
+    } catch (e) {
+        showToast("❌ Ошибка при публикации объявления о машине");
+    }
+};
+
+        // Базовые обработчики окон авторизации
+        const btnLogin = document.getElementById('btnLogin');
+        const modalOverlay = document.getElementById('modalOverlay');
+        
+        btnLogin?.addEventListener('click', openModal);
+
+        function openModal() {
+            if(window.resetModalStates) window.resetModalStates();
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        window.closeModal = function() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        };
+
+        window.closeModalOutside = function(e) {
+            if (e.target === modalOverlay) closeModal();
+        };
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeProfileModal();
+                closeCargoModal();
+                closeTruckModal();
+            }
+        });
+
+        window.toggleDropdown = function() {
+            document.getElementById('userDropdown')?.classList.toggle('active');
+        };
+
+        document.addEventListener('click', (e) => {
+            const wrapper = document.querySelector('.user-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                document.getElementById('userDropdown')?.classList.remove('active');
+            }
+        });
+
+        window.showToast = function(msg) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        };
+
+        // ===== Логика подмены кнопки Позвонить на номер со ссылкой в WhatsApp =====
+        window.revealContact = function(buttonElement, phoneNumber) {
+            const waLink = document.createElement('a');
+            waLink.className = 'cargo-phone-link';
+            waLink.href = `https://wa.me/${phoneNumber}`;
+            waLink.target = '_blank';
+            
+            const formattedNumber = phoneNumber.startsWith('7') 
+                ? `+7 ${phoneNumber.substring(1,4)} ${phoneNumber.substring(4,7)} ${phoneNumber.substring(7,11)}`
+                : phoneNumber;
+            waLink.textContent = formattedNumber;
+            
+            buttonElement.parentNode.replaceChild(waLink, buttonElement);
+        };
+        // Форматирование даты из Firestore Timestamp
+function formatDate(timestamp) {
+    if (!timestamp || !timestamp.toDate) return 'только что';
+    const date = timestamp.toDate();
+    return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+}
+
+// "5 часов назад", "вчера" и т.д.
+function getTimeAgo(timestamp) {
+    if (!timestamp || !timestamp.toDate) return '';
+    const date = timestamp.toDate();
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'только что';
+    if (diffMins < 60) return `${diffMins} мин назад`;
+    if (diffHours < 24) return `${diffHours} ч назад`;
+    if (diffDays === 1) return 'вчера';
+    return `${diffDays} дн назад`;
+}
+
+// ====== Переключатель между грузами и машинами ======
+window.setView = async function(view) {
+    if (view !== 'cargo' && view !== 'truck') return;
+    currentView = view;
+
+    // Стили вкладок
+    document.getElementById('tabFindCargo').classList.toggle('active', view === 'cargo');
+    document.getElementById('tabFindTruck').classList.toggle('active', view === 'truck');
+
+    // Сброс пагинации и фильтров
+    currentPage = 1;
+    
+    // Обновление подписей и промо
+    if (view === 'cargo') {
+        document.getElementById('labelFrom').textContent = 'Откуда';
+        document.getElementById('labelTo').textContent = 'Куда';
+        document.getElementById('labelBody').textContent = 'Кузов';
+        document.getElementById('labelWeight').textContent = 'Вес, т';
+        document.getElementById('cargoGridTitle').textContent = 'Актуальные грузы в Казахстане';
+        document.getElementById('promoTitle').textContent = 'Публикуйте ваши грузы бесплатно';
+        document.getElementById('promoText').textContent = 'TransX — полностью открытая платформа. Обменивайтесь контактами напрямую, без посредников и скрытых комиссий.';
+        document.getElementById('btnOpenAdd').textContent = 'Разместить груз';
+        await loadCargosFromFirebase();
+    } else {
+        document.getElementById('labelFrom').textContent = 'Город / База';
+        document.getElementById('labelTo').textContent = 'Маршрут';
+        document.getElementById('labelBody').textContent = 'Тип кузова';
+        document.getElementById('labelWeight').textContent = 'Грузоподъёмность';
+        document.getElementById('cargoGridTitle').textContent = 'Актуальные машины в Казахстане';
+        document.getElementById('promoTitle').textContent = 'Публикуйте вашу машину бесплатно';
+        document.getElementById('promoText').textContent = 'Владельцы транспорта размещают свои услуги — получите клиентов напрямую.';
+        document.getElementById('btnOpenAdd').textContent = 'Разместить машину';
+        await loadTrucksFromFirebase();
+    }
+};
+
+function awaitLoadCargos() { loadCargosFromFirebase(); }
+function awaitLoadTrucks() { loadTrucksFromFirebase(); }
+
+window.openAddModal = function() {
+    if (currentView === 'cargo') openCargoModal();
+    else openTruckModal();
+};
+
+// Toggle advanced filters
+window.toggleAdvancedFilters = function() {
+    const block = document.getElementById('advancedFilters');
+    block.classList.toggle('show');
+    const btn = document.getElementById('toggleFiltersBtn');
+    btn.textContent = block.classList.contains('show') ? '- Свернуть фильтры' : '+ Расширенные фильтры';
+};
+
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Небольшая инициализация автодополнений для форм добавления (дублировалось ранее)
+            const addFromInput = document.getElementById('addCargoFrom');
+            const addFromSuggestions = document.getElementById('addCargoFromSuggestions');
+            
+            const addToInput = document.getElementById('addCargoTo');
+            const addToSuggestions = document.getElementById('addCargoToSuggestions');
+
+            // Универсальная функция для инициализации подсказок - ранее была, но на всякий случай не ломаем
+            function initAddCargoAutocomplete(input, suggestionsBox) {
+                if (!input || !suggestionsBox) return;
+
+                input.addEventListener('input', function() {
+                    const query = this.value.toLowerCase().trim();
+                    suggestionsBox.innerHTML = '';
+                    
+                    if (query.length < 1) {
+                        suggestionsBox.style.display = 'none';
+                        return;
+                    }
+
+                    const cities = ["Алматы", "Астана", "Шымкент", "Караганда", "Актобе", "Тараз", "Павлодар", "Усть-Каменогорск", "Семей", "Кызылорда", "Костанай", "Атырау", "Уральск", "Петропавловск", "Актау", "Темиртау", "Туркестан", "Кокшетау", "Талдыкорган", "Экибастуз"];
+
+                    const filtered = cities.filter(city => city.toLowerCase().includes(query));
+
+                    if (filtered.length === 0) {
+                        suggestionsBox.style.display = 'none';
+                        return;
+                    }
+
+                    filtered.forEach(city => {
+                        const item = document.createElement('div');
+                        item.className = 'autocomplete-suggestion-item';
+                        item.innerHTML = `<span class="city-icon">📍</span> <span>${city}</span>`;
+                        
+                        item.addEventListener('click', () => {
+                            input.value = city;
+                            suggestionsBox.style.display = 'none';
+                        });
+                        
+                        suggestionsBox.appendChild(item);
+                    });
+
+                    suggestionsBox.style.display = 'block';
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!input.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                        suggestionsBox.style.display = 'none';
+                    }
+                });
+            }
+
+            initAddCargoAutocomplete(addFromInput, addFromSuggestions);
+            initAddCargoAutocomplete(addToInput, addToSuggestions);
+        });
+
+
+
+
+
+
+    </script>
+</body>
+</html>
